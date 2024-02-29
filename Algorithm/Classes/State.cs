@@ -19,7 +19,7 @@ namespace tower_of_hanoi.Classes
         public const int DISC_COUNT = 5;
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
-        public int f { get { return DISC_COUNT - towers[2].Count; } }
+        public int f { get { return DISC_COUNT - towers[2].Count; } } // Recommend: check order of goal column
         public (Func<State>, State)? pre { get; set; }
         public List<Func<State?>> Moves = new List<Func<State?>>();
         public State() { }
@@ -68,7 +68,7 @@ namespace tower_of_hanoi.Classes
                 if (!newState.towers[2].TryPeek(out _) || disc_move < newState.towers[2].Peek())
                 {
                     newState.towers[2].Push(disc_move);
-                    newState.pre = (First_To_Last, this);
+                    newState.pre = (First_To_Middle, this);
                     newState.g += 1;
                     return new State(newState.towers, newState.g, newState.pre);
                 }
