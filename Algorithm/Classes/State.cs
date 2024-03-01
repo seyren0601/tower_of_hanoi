@@ -20,130 +20,36 @@ namespace tower_of_hanoi.Classes
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
         public int f { get { return DISC_COUNT - towers[2].Count; } } // Recommend: check order of goal column
-        public (Func<State>, State)? pre { get; set; }
-        public List<Func<State?>> Moves = new List<Func<State?>>();
+        public ((int , int), State)? pre { get; set; }
         public State() { }
         public State(Stack<int>[] towers, int g)
         {
             towers.CopyTo(this.towers, 0);
             this.g = g;
-            Moves.Add(First_To_Middle);
-            Moves.Add(First_To_Last);
-            Moves.Add(Middle_To_Last);
-            Moves.Add(Middle_To_First);
-            Moves.Add(Last_To_First);
-            Moves.Add(Last_To_Middle);
         }
 
-        public State(Stack<int>[] towers, int g, (Func<State>, State)? pre) : this(towers, g)
+        public State(Stack<int>[] towers, int g, ((int, int), State)? pre) : this(towers, g)
         {
             this.pre = pre;
         }
 
-        #region Moves
-
-        public State? First_To_Middle()
+        #region Move
+        public State? Move(int from, int to)
         {
             State newState = this.Clone();
-            if (newState.towers[0].TryPeek(out _))
+            if (newState.towers[from].TryPeek(out _))
             {
-                int disc_move = newState.towers[0].Pop();
-                if (!newState.towers[1].TryPeek(out _) || disc_move < newState.towers[1].Peek())
+                int disc_move = newState.towers[from].Pop();
+                if (!newState.towers[to].TryPeek(out _) || disc_move < newState.towers[to].Peek())
                 {
-                    newState.towers[1].Push(disc_move);
-                    newState.pre = (First_To_Last, this);
+                    newState.towers[to].Push(disc_move);
+                    newState.pre = ((from, to), this);
                     newState.g += 1;
                     return new State(newState.towers, newState.g, newState.pre);
                 }
             }
             return null;
         }
-
-        public State? First_To_Last()
-        {
-            State newState = this.Clone();
-            if (newState.towers[0].TryPeek(out _))
-            {
-                int disc_move = newState.towers[0].Pop();
-                if (!newState.towers[2].TryPeek(out _) || disc_move < newState.towers[2].Peek())
-                {
-                    newState.towers[2].Push(disc_move);
-                    newState.pre = (First_To_Middle, this);
-                    newState.g += 1;
-                    return new State(newState.towers, newState.g, newState.pre);
-                }
-            }
-            return null;
-        }
-
-        public State? Middle_To_First()
-        {
-            State newState = this.Clone();
-            if (newState.towers[1].TryPeek(out _))
-            {
-                int disc_move = newState.towers[1].Pop();
-                if (!newState.towers[0].TryPeek(out _) || disc_move < newState.towers[0].Peek())
-                {
-                    newState.towers[0].Push(disc_move);
-                    newState.pre = (Middle_To_First, this);
-                    newState.g += 1;
-                    return new State(newState.towers, newState.g, newState.pre);
-                }
-            }
-            return null;
-        }
-
-        public State? Middle_To_Last()
-        {
-            State newState = this.Clone();
-            if (newState.towers[1].TryPeek(out _))
-            {
-                int disc_move = newState.towers[1].Pop();
-                if (!newState.towers[2].TryPeek(out _) || disc_move < newState.towers[2].Peek())
-                {
-                    newState.towers[2].Push(disc_move);
-                    newState.pre = (Middle_To_Last, this);
-                    newState.g += 1;
-                    return new State(newState.towers, newState.g, newState.pre);
-                }
-            }
-            return null;
-        }
-
-        public State? Last_To_First()
-        {
-            State newState = this.Clone();
-            if (newState.towers[2].TryPeek(out _))
-            {
-                int disc_move = newState.towers[2].Pop();
-                if (!newState.towers[0].TryPeek(out _) || disc_move < newState.towers[0].Peek())
-                {
-                    newState.towers[0].Push(disc_move);
-                    newState.pre = (Last_To_First, this);
-                    newState.g += 1;
-                    return new State(newState.towers, newState.g, newState.pre);
-                }
-            }
-            return null;
-        }
-
-        public State? Last_To_Middle()
-        {
-            State newState = this.Clone();
-            if (newState.towers[2].TryPeek(out _))
-            {
-                int disc_move = newState.towers[2].Pop();
-                if (!newState.towers[1].TryPeek(out _) || disc_move < newState.towers[1].Peek())
-                {
-                    newState.towers[1].Push(disc_move);
-                    newState.pre = (Last_To_Middle, this);
-                    newState.g += 1;
-                    return new State(newState.towers, newState.g, newState.pre);
-                }
-            }
-            return null;
-        }
-
         #endregion
 
         #region Utilities

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,8 @@ namespace tower_of_hanoi.Classes
 {
     static internal class Algorithm
     {
-        public static List<State>? Solve(State start, State goal)
+        public static List<(int, int)> Moves = new List<(int, int)>();
+        public static List<State>? Solve_AStar(State start, State goal)
         {
             bool path_found = false;
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
@@ -39,22 +41,30 @@ namespace tower_of_hanoi.Classes
                 }
 
                 // For each moves from the current state
-                foreach(var function in state.Moves)
+                for(int i = 0; i < State.NUM_OF_TOWER; i++)
                 {
-                    State? newState = function();
-                    if(newState is not null) // If move is valid
+                    for(int j = 0; j < State.NUM_OF_TOWER; j++)
                     {
-                        if (!Open_Check.ContainsKey(newState) && !Close.Any(x=>x == newState))
+                        State? newState = null;
+                        if (i != j)
                         {
-                            Open_Check[newState] = newState.g;
-                            Open.Enqueue(newState, newState);
+                            newState = state.Move(i, j);
                         }
-                        else
+                        else continue;
+                        if (newState is not null) // If move is valid
                         {
-                            if (Open_Check.ContainsKey(newState) && Open_Check[state] > newState.g)
+                            if (!Open_Check.ContainsKey(newState) && !Close.Any(x => x == newState))
                             {
-                                Open.Enqueue(newState, newState);
                                 Open_Check[newState] = newState.g;
+                                Open.Enqueue(newState, newState);
+                            }
+                            else
+                            {
+                                if (Open_Check.ContainsKey(newState) && Open_Check[state] > newState.g)
+                                {
+                                    Open.Enqueue(newState, newState);
+                                    Open_Check[newState] = newState.g;
+                                }
                             }
                         }
                     }
@@ -66,6 +76,18 @@ namespace tower_of_hanoi.Classes
                 return Close;
             }
             return null;
+        }
+
+        public static void Solve_Recursion(int n, int from,
+                             int to, int aux)
+        {
+            if (n == 0)
+            {
+                return;
+            }
+            Solve_Recursion(n - 1, from, aux, to);
+            Moves.Add((from, to));
+            Solve_Recursion(n - 1, aux, to, from);
         }
     }
 }
