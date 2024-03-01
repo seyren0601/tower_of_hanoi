@@ -5,8 +5,12 @@ using System.Globalization;
 using System.Xml.Schema;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.AI;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class StartGame : MonoBehaviour
 {
@@ -15,44 +19,52 @@ public class StartGame : MonoBehaviour
     public GameObject diaPrefag;
 
     public const int so_dia = 3;
+    int so_dia_hientai = 0;
 
-    float start;
-    float stop;
+    public float start;
+    public float stop;
 
     List<GameObject> ds_dia = new List<GameObject>();
+
+    private InputHandler inputHandler;
+    InputAction.CallbackContext context;
 
     private Vector3 pos_base_dia;
     private Vector3 scale_base_dia;
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         pos_base_dia = Vector3.zero;
         scale_base_dia = diaPrefag.transform.localScale;
+        SpawnDia();
+        inputHandler = FindObjectOfType<InputHandler>();
+    }
+
+    void Update()
+    {
+        if (so_dia_hientai < so_dia)
+        {
+            if (Input.Get(0)) 
+            {
+                Debug.Log("Da Click");
+                ds_dia[so_dia_hientai] = Instantiate(diaPrefag);
+                ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
+                ds_dia[so_dia_hientai].transform.position = new Vector3(cotPrefag.transform.position.x - 0.5f, cotPrefag.transform.position.y + 4f, cotPrefag.transform.position.z);
+                so_dia_hientai++;
+                
+            }
+        }
+    }
+
+
+
+    void SpawnDia()
+    { 
         for (int i = 0; i < so_dia; i++)
         {
             ds_dia.Add(gameObject);
             Debug.Log("da them vao list");
         }
 
-        for (int i = 0; i < so_dia; i++)
-        {
-            ds_dia[i] = Instantiate(diaPrefag);
-            ds_dia[i].transform.position = new Vector3(0, 0, 0);
-        }
-
-        for (int i = 1; i < so_dia - 1; i++)
-        {
-            if (i > 0)
-            {
-                float range_dia_duoi = ds_dia[i - 1].transform.localScale.y;
-                float range_dia_tren = ds_dia[i].transform.localScale.y;
-                ds_dia[i].transform.position = new Vector3(0, range_dia_duoi + (range_dia_duoi * range_dia_tren * 2), 0);
-            }
-            else
-            {
-                ds_dia[i].transform.position = new Vector3(0, 0, 0);
-            }
-        }
     }
-
 }
