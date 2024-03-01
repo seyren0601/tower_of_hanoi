@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -9,7 +10,6 @@ using UnityEngine.Experimental.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UIElements;
-using UnityEngine.Windows;
 using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class StartGame : MonoBehaviour
@@ -37,21 +37,30 @@ public class StartGame : MonoBehaviour
         pos_base_dia = Vector3.zero;
         scale_base_dia = diaPrefag.transform.localScale;
         SpawnDia();
-        inputHandler = FindObjectOfType<InputHandler>();
+
     }
 
     void Update()
     {
         if (so_dia_hientai < so_dia)
         {
-            if (Input.Get(0)) 
+            if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Da Click");
-                ds_dia[so_dia_hientai] = Instantiate(diaPrefag);
-                ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
-                ds_dia[so_dia_hientai].transform.position = new Vector3(cotPrefag.transform.position.x - 0.5f, cotPrefag.transform.position.y + 4f, cotPrefag.transform.position.z);
-                so_dia_hientai++;
+                Debug.Log(Input.mousePosition);
+
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                if (hit.collider != null && hit != null && hit.collider.name == cotPrefag.name)
+                {
+                    Debug.Log(hit.collider.name);
+                    ds_dia[so_dia_hientai] = Instantiate(diaPrefag);
+                    ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
+                    ds_dia[so_dia_hientai].transform.position = new Vector3(cotPrefag.transform.position.x - 0.5f, cotPrefag.transform.position.y + 4f, cotPrefag.transform.position.z);
+                    so_dia_hientai++;
+                }
                 
+
             }
         }
     }
