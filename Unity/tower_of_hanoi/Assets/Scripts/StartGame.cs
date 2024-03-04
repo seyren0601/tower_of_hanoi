@@ -5,6 +5,7 @@ using System.Data;
 using System.Globalization;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Xml.Schema;
+using tower_of_hanoi.Classes;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
@@ -21,7 +22,7 @@ public class StartGame : MonoBehaviour
     public GameObject dePrefag;
     public GameObject diaPrefag;
 
-    public static int so_dia { get; set; } = 10;
+    public static int so_dia { get; set; } = 5;
     private const int so_cot = 3;
 
     private const float heso_scale_x = 1.1f;
@@ -47,59 +48,59 @@ public class StartGame : MonoBehaviour
 
     void Update()
     {
-        
-        if (so_dia_hientai < so_dia)
-        {
-            if (Input.GetMouseButtonDown(0))
+        if(!GameInfo.done_init){
+            if (so_dia_hientai < so_dia)
             {
-                Debug.Log("Da Click");
-
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-                
-                if (hit.collider != null && hit != null && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    int cot_current = Find_Index_Cot(hit.collider.name);
+                    Debug.Log("Da Click");
 
-                    Debug.Log(hit.collider.name);
-
-                    ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
-                    ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-                    ds_dia[so_dia_hientai].transform.position = new Vector3(
-                        ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia), 
-                        ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y,so_dia)), 
-                        ds_cot[cot_current].transform.position.z);
-
-
-                    if (hit.collider.name == "Cot 1")
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                    
+                    if (hit.collider != null && hit != null && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
                     {
-                        cot1.Push(ds_dia[so_dia_hientai]);
-                        GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
-                        Debug.Log(GameInfo.cot1.Peek().name);
-                    }
-                    else if (hit.collider.name == "Cot 2")
-                    {
-                        cot2.Push(ds_dia[so_dia_hientai]);
-                        GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
-                    }
-                    else if (hit.collider.name == "Cot 3")
-                    {
-                        cot3.Push(ds_dia[so_dia_hientai]);
-                        GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
+                        int cot_current = Find_Index_Cot(hit.collider.name);
+
+                        Debug.Log(hit.collider.name);
+
+                        ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
+                        ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                        ds_dia[so_dia_hientai].transform.position = new Vector3(
+                            ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia), 
+                            ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y,so_dia)), 
+                            ds_cot[cot_current].transform.position.z);
+
+
+                        if (hit.collider.name == "Cot 1")
+                        {
+                            cot1.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
+                            Debug.Log(GameInfo.cot1.Peek().name);
+                        }
+                        else if (hit.collider.name == "Cot 2")
+                        {
+                            cot2.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
+                        }
+                        else if (hit.collider.name == "Cot 3")
+                        {
+                            cot3.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
+                        }
+                        
+
+                        so_dia_hientai++;
                     }
                     
-
-                    so_dia_hientai++;
                 }
-                
+            }
+            else
+            {
+                Debug.Log("Đã hết đĩa");
+                GameInfo.done_init = true;
             }
         }
-        else
-        {
-            Debug.Log("Đã hết đĩa");
-            GameInfo.done_init = true;
-        }
-        
     }
     
     private void OnCollisionEnter2D(Collision2D col)
