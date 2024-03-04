@@ -54,7 +54,6 @@ else
 */
 
 
-
 // Solution with recursion
 Algorithm.Solve_Recursion(State.DISC_COUNT, 0, 2, 1);
 Console.WriteLine("Moves: " + Algorithm.Moves.Count);

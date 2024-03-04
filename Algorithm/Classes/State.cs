@@ -16,10 +16,12 @@ namespace tower_of_hanoi.Classes
     internal class State
     {
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 5;
+        public const int DISC_COUNT = 10;
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
-        public int f { get { return DISC_COUNT - towers[2].Count; } } // Recommend: check order of goal column
+        public int f { get { return DISC_COUNT - towers[2].Count; } } 
+        // Recommend: f = (check order of goal column)
+        // + (check minimal moves required to get each disk out in current state)
         public ((int , int), State)? pre { get; set; }
         public State() { }
         public State(Stack<int>[] towers, int g)

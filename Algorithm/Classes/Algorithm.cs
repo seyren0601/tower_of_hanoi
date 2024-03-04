@@ -18,8 +18,11 @@ namespace tower_of_hanoi.Classes
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
             Dictionary<State, int> Open_Check = new Dictionary<State, int>();
             List<State> Close = new List<State>();
+
+
             Open.Enqueue(start, start);
             Open_Check[start] = start.g;
+
             while(Open.Count > 0)
             {
                 State state = Open.Dequeue();
@@ -53,18 +56,10 @@ namespace tower_of_hanoi.Classes
                         else continue;
                         if (newState is not null) // If move is valid
                         {
-                            if (!Open_Check.ContainsKey(newState) && !Close.Any(x => x == newState))
+                            if (!Open_Check.ContainsKey(newState) && !Close.Any(x => x == newState)) // Skip state even if found in Open
                             {
                                 Open_Check[newState] = newState.g;
                                 Open.Enqueue(newState, newState);
-                            }
-                            else
-                            {
-                                if (Open_Check.ContainsKey(newState) && Open_Check[state] > newState.g)
-                                {
-                                    Open.Enqueue(newState, newState);
-                                    Open_Check[newState] = newState.g;
-                                }
                             }
                         }
                     }
