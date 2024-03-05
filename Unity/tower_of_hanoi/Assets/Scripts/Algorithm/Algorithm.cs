@@ -6,13 +6,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using tower_of_hanoi.Classes;
 
 namespace tower_of_hanoi.Classes
 {
     public class Algorithm:MonoBehaviour
     {
         public static List<(int, int)> Moves = new List<(int, int)>();
-        /*public static List<State>? Solve_AStar(State start, State goal)
+        public static List<State>? Solve_AStar(State start, State goal)
         {
             bool path_found = false;
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
@@ -71,7 +72,19 @@ namespace tower_of_hanoi.Classes
                 return Close;
             }
             return null;
-        }*/
+        }
+
+        public static List<(int, int)> GetMoveList(List<State> Close){
+            List<(int, int)> Moves = new List<(int, int)>();
+            State goal = Close.Last();
+            do{
+                int from = goal.pre.Value.Item1.Item1;
+                int to = goal.pre.Value.Item1.Item2;
+                Moves.Insert(0, (from, to));
+                goal = goal.pre.Value.Item2;
+            }while(goal.pre != null);
+            return Moves;
+        }
 
         public static void Solve_Recursion(int n, int from,
                              int to, int aux)

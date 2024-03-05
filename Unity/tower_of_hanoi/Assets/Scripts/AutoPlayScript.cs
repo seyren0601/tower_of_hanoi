@@ -42,7 +42,9 @@ public class AutoPlayScript:MonoBehaviour
             cot_list[1] = stack_cot2;
             cot_list[2] = stack_cot3;
             Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
-            Moves = Algorithm.Moves;
+            // Get list bước đi bằng thuật toán A* hoặc đệ quy
+            Moves = Algorithm.Moves; // Dùng thuật toán đệ quy
+            // Dùng thuật toán A*
             Debug.Log(Moves.Count);
             algorithm_init=true;
         }

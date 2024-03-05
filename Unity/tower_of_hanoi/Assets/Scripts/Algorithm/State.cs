@@ -9,11 +9,12 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace tower_of_hanoi.Classes
 {
     [Serializable]
-    internal class State
+    public class State:MonoBehaviour
     {
         public const int NUM_OF_TOWER = 3;
         public const int DISC_COUNT = 10;
