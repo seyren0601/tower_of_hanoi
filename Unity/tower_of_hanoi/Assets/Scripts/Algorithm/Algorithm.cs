@@ -2,17 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace tower_of_hanoi.Classes
 {
-    static internal class Algorithm
+    public class Algorithm:MonoBehaviour
     {
         public static List<(int, int)> Moves = new List<(int, int)>();
-        public static List<State>? Solve_AStar(State start, State goal)
+        /*public static List<State>? Solve_AStar(State start, State goal)
         {
             bool path_found = false;
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
@@ -71,7 +71,7 @@ namespace tower_of_hanoi.Classes
                 return Close;
             }
             return null;
-        }
+        }*/
 
         public static void Solve_Recursion(int n, int from,
                              int to, int aux)

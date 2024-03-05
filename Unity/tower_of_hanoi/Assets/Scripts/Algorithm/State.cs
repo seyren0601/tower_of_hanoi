@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace tower_of_hanoi.Classes
@@ -88,10 +88,10 @@ namespace tower_of_hanoi.Classes
             if (this.GetType().IsSerializable)
             {
                 // Serialize twice to normalize the stack
-                var json = JsonSerializer.Serialize(this);
-                State state = JsonSerializer.Deserialize<State>(json);
-                var json2 = JsonSerializer.Serialize(state);
-                State state_final = JsonSerializer.Deserialize<State>(json2);
+                var json = JsonConvert.SerializeObject(this);
+                State state = JsonConvert.DeserializeObject<State>(json);
+                var json2 = JsonConvert.SerializeObject(state);
+                State state_final = JsonConvert.DeserializeObject<State>(json2);
                 return state_final;
             }
             return null;
