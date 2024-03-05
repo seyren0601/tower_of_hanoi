@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Xml.Schema;
 using tower_of_hanoi.Classes;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Experimental.AI;
@@ -22,8 +23,13 @@ public class StartGame : MonoBehaviour
     public GameObject dePrefag;
     public GameObject diaPrefag;
 
+    private Menu_ChonButton menu_ChonButton;
+
     public static int so_dia { get; set; } = 5;
     private const int so_cot = 3;
+
+    public float thoigian_tha_dia;
+    float speed_tha_dia;
 
     private const float heso_scale_x = 1.1f;
     private const float heso_scale_y = 1.054f;
@@ -39,85 +45,86 @@ public class StartGame : MonoBehaviour
     List<GameObject> ds_cot = new List<GameObject>();
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        menu_ChonButton = FindObjectOfType<Menu_ChonButton>();
         SpawnDia(); 
         SpawnCot();
         SpawnDe();
+        
     }
 
     void Update()
     {
-        if(!GameInfo.done_init){
-            if (so_dia_hientai < so_dia)
+        if(!GameInfo.done_init)
+        {
+            if (so_dia_hientai >= so_dia)
             {
-                if (Input.GetMouseButtonDown(0))
+                Debug.Log("Đã hết đĩa");
+                menu_ChonButton.setActive(true);
+            }
+            speed_tha_dia -= Time.deltaTime;
+            if (speed_tha_dia <= 0)
+            {
+                if (so_dia_hientai < so_dia)
                 {
-                    Debug.Log("Da Click");
-
-                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-                    
-                    if (hit.collider != null && hit != null && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        int cot_current = Find_Index_Cot(hit.collider.name);
+                        Debug.Log("Da Click");
+
+                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
                         Debug.Log(hit.collider.name);
 
-                        ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
-                        ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-                        ds_dia[so_dia_hientai].transform.position = new Vector3(
-                            ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia), 
-                            ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y,so_dia)), 
-                            ds_cot[cot_current].transform.position.z);
+                        if (hit && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
+                        {
+                            int cot_current = Find_Index_Cot(hit.collider.name);
+
+                            ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
+                            ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                            ds_dia[so_dia_hientai].transform.position = new Vector3(
+                                ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia),
+                                ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y, so_dia)),
+                                ds_cot[cot_current].transform.position.z);
 
 
-                        if (hit.collider.name == "Cot 1")
-                        {
-                            cot1.Push(ds_dia[so_dia_hientai]);
-                            GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
-                            Debug.Log(GameInfo.cot1.Peek().name);
+                            if (hit.collider.name == "Cot 1")
+                            {
+                                cot1.Push(ds_dia[so_dia_hientai]);
+                                GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
+                            }
+                            else if (hit.collider.name == "Cot 2")
+                            {
+                                cot2.Push(ds_dia[so_dia_hientai]);
+                                GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
+                            }
+                            else if (hit.collider.name == "Cot 3")
+                            {
+                                cot3.Push(ds_dia[so_dia_hientai]);
+                                GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
+                            }
+                            so_dia_hientai++;
+                            speed_tha_dia = thoigian_tha_dia;
                         }
-                        else if (hit.collider.name == "Cot 2")
-                        {
-                            cot2.Push(ds_dia[so_dia_hientai]);
-                            GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
-                        }
-                        else if (hit.collider.name == "Cot 3")
-                        {
-                            cot3.Push(ds_dia[so_dia_hientai]);
-                            GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
-                        }
-                        
-
-                        so_dia_hientai++;
                     }
-                    
                 }
+                
             }
-            else
-            {
-                Debug.Log("Đã hết đĩa");
-                GameInfo.done_init = true;
-            }
+            
         }
-    }
-    
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        
     }
 
     void SpawnDia()
     {
-        const float base_dia = 0.3f;
+        float base_dia = diaPrefag.transform.localScale.x;
         
 
         ds_dia = new List<GameObject>(so_dia);
 
+        GameObject dia = new GameObject();
         for (int i = so_dia - 1; i >= 0; i--)
         {
-            GameObject dia = new GameObject();
             dia = Instantiate(diaPrefag);
             dia.transform.localScale = new Vector2(base_dia * Pow(heso_scale_x, i + 1), base_dia * Pow(heso_scale_y, i + 1));
             dia.name = "" + (i + 1);
