@@ -35,8 +35,10 @@ public class StartGame : MonoBehaviour
     private const float heso_scale_x = 1.1f;
     private const float heso_scale_y = 1.054f;
     //private const float 
-
+    public bool da_chon = false;
     int so_dia_hientai = 0;
+    int index_dia_dang_chon;
+    int index_cot_dang_chon;
 
     Stack<GameObject> cot1 = new Stack<GameObject>();
     Stack<GameObject> cot2 = new Stack<GameObject>();
@@ -204,6 +206,15 @@ public class StartGame : MonoBehaviour
         for (int i = 0; i < ds_cot.Count; i++)
         {
             if (name == ds_cot[i].name) return i;
+        }
+        return -1;
+    }
+
+    int Find_Index_Dia(string name)
+    {
+        for (int i = 0; i < ds_dia.Count; i++)
+        {
+            if (name == ds_dia[i].name) return i;
         }
         return -1;
     }
