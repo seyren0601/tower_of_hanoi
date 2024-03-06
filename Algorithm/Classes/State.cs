@@ -15,19 +15,30 @@ namespace tower_of_hanoi.Classes
     [Serializable]
     internal class State
     {
+        // Các giá trị số lượng đĩa và cột để thử nghiệm
         public const int NUM_OF_TOWER = 3;
         public const int DISC_COUNT = 6;
+
+
+        // Cấu trúc dữ liệu để lưu tình trạng các cột
+        // Mỗi cột là một stack (thể hiện tính vào trước ra sau của đĩa)
+        // Tất cả được lưu vào một array có capacity là 3 (3 cột)
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
+        // g là số bước đi để đến được trạng thái hiện tại
         public int g { get; set; }
+        // f = h (tính bằng hàm GetHeuristicValue())
+        // Bỏ qua g trong f vì g có giá trị cố định (+1) khi di chuyển qua trạng thái mới
+        // Hàm này trả về số lượng đĩa thiếu/sai vị trí trong cột đích
         public int f 
         { 
             get
             {
                 return GetHeuristicValue();
             } 
-        } 
-        // Recommend: f = (check order of goal column)
-        // + (check minimal moves required to get each disk out in current state)
+        }
+        // pre là một tuple chứa:
+        // một tuple bao gồm 2 số nguyên: cột lấy đĩa và cột đặt đĩa (giá trị từ 0 đến 2)
+        // một đối tượng State thể hiện trạng thái kế trước của trạng thái hiện tại
         public ((int , int), State)? pre { get; set; }
         public State() { }
         public State(Stack<int>[] towers, int g)
@@ -42,6 +53,13 @@ namespace tower_of_hanoi.Classes
         }
 
         #region Move
+        // Hàm di chuyển với tham số là cột lấy đĩa (from) và cột đặt đĩa (to)
+        // Hàm sẽ kiểm tra các điều kiện:
+        //      + cột lấy đĩa (from) có đĩa hay không
+        //      + cột đặt đĩa (to) có trống hay không
+        //      + đĩa trên cùng (top) của cột đặt đĩa (to) có nhỏ hơn đĩa trên cùng (top) của cột lấy đĩa hay không (from)
+        // Nếu đáp ứng điều kiện, hàm trả về một trạng thái mới sau khi di chuyển đĩa
+        // Nếu không, hàm trả về null
         public State? Move(int from, int to)
         {
             State newState = this.Clone();
@@ -61,6 +79,7 @@ namespace tower_of_hanoi.Classes
         #endregion
 
         #region Utilities
+        // Hàm in các cột trong trạng thái
         public void PrintTowers()
         {
             State copy = this.Clone();
@@ -88,7 +107,10 @@ namespace tower_of_hanoi.Classes
             return HashCode.Combine(towers);
         }*/
 
-        // Clone method to make a deep copy of current state
+        // Hàm clone một deep copy của trạng thái hiện tại (để tạo ra trạng thái mới)
+        // Ý tưởng thuật toán là serialize đối tượng hiện tại và deserialize để lấy một đối tượng mới
+        // Thuật toán cần phải thực hiện bước này 2 lần, vì mỗi lần thực hiện các stack của đối tượng sẽ đảo chiều
+        // [Note] C# không cho phép pass by value cho các đối tượng thuộc kiểu phức tạp
         public State Clone()
         {
             if (this.GetType().IsSerializable)
@@ -103,6 +125,7 @@ namespace tower_of_hanoi.Classes
             return null;
         }
 
+        // Hàm tính giá trị heuristic
         int GetHeuristicValue() // Count the number of wrong ordered discs in goal
         {
             int[] array = new int[DISC_COUNT];
@@ -125,6 +148,8 @@ namespace tower_of_hanoi.Classes
         #endregion
 
         #region Operators
+        // Overload operator == và != để nhận biết hai trạng thái giống nhau
+        // dựa trên các stack trong hai trạng thái
         public static bool operator ==(State lhs, State rhs)
         {
             var lhs_clone = lhs.Clone();
@@ -150,6 +175,7 @@ namespace tower_of_hanoi.Classes
         #endregion
     }
 
+    // Class comparer để sắp xếp các trạng thái trong PriorityQueue
     internal class StateComparer : IComparer<State>
     {
         public int Compare(State lhs, State rhs)
