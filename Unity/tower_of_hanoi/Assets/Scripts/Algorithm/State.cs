@@ -9,17 +9,24 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace tower_of_hanoi.Classes
 {
     [Serializable]
-    internal class State
+    public class State
     {
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 10;
+        public int DISC_COUNT = (int)GameInfo.disc_count;
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
-        public int f { get { return DISC_COUNT - towers[2].Count; } } 
+        public int f 
+        { 
+            get 
+            { 
+                return GetHeuristicValue();
+            } 
+        } 
         // Recommend: f = (check order of goal column)
         // + (check minimal moves required to get each disk out in current state)
         public ((int , int), State)? pre { get; set; }
@@ -87,14 +94,35 @@ namespace tower_of_hanoi.Classes
         {
             if (this.GetType().IsSerializable)
             {
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, MaxDepth = int.MaxValue };
                 // Serialize twice to normalize the stack
                 var json = JsonConvert.SerializeObject(this);
-                State state = JsonConvert.DeserializeObject<State>(json);
+                State state = JsonConvert.DeserializeObject<State>(json, settings);
                 var json2 = JsonConvert.SerializeObject(state);
-                State state_final = JsonConvert.DeserializeObject<State>(json2);
+                State state_final = JsonConvert.DeserializeObject<State>(json2, settings);
                 return state_final;
             }
             return null;
+        }
+
+        int GetHeuristicValue()
+        {
+            int[] array = new int[DISC_COUNT];
+            towers[2].ToArray().CopyTo(array, 0);
+            int max_disc = DISC_COUNT;
+            int count = 0;
+            for(int i = DISC_COUNT - 1; i >= 0 ; i--)
+            {
+                if (array[i] == max_disc)
+                {
+                    count += 1;
+                }
+                if (array[i] != 0)
+                {
+                    max_disc -= 1;
+                }
+            }
+            return DISC_COUNT - count;
         }
         #endregion
 
@@ -128,8 +156,8 @@ namespace tower_of_hanoi.Classes
     {
         public int Compare(State lhs, State rhs)
         {
-            if (lhs.g == rhs.g) return lhs.f.CompareTo(rhs.f);
-            return lhs.g.CompareTo(rhs.g);
+            if(lhs.f == rhs.f) return lhs.g.CompareTo(rhs.g);
+            return lhs.f.CompareTo(rhs.f);
         }
     }
 }

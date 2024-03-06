@@ -11,6 +11,9 @@ public class GameInfo : MonoBehaviour
     public static Stack<GameObject> cot1 { get; set; } = new Stack<GameObject>();
     public static Stack<GameObject> cot2 { get; set; } = new Stack<GameObject>();
     public static Stack<GameObject> cot3 { get; set; } = new Stack<GameObject>();
+    public static Stack<int> cot1_int{get;set; } = new Stack<int>();
+    public static Stack<int> cot2_int{get;set; } = new Stack<int>();
+    public static Stack<int> cot3_int{get;set; } = new Stack<int>();
 
     public static Vector2 toado_cot1 { get; set; }
     public static Vector2 toado_cot2 { get; set; }
