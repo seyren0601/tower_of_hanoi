@@ -1,0 +1,17 @@
+disc_count = 6
+f = 0 (dijkstra, compare by g) (659ms) total nodes = 721
+f = disc_count - goal count (311ms) total nodes = 480
+f = heuristic (number of wrong ordered discs in goal) (187ms) total nodes = 353
+
+recursion: instantaneous(<1ms)
+
+total moves = 63 (2^n - 1)
+
+disc_count = 7
+f = 0 (dijkstra, compare by g) (5557ms) total nodes = 2132
+f = disc_count - goal count (2573 ms) total nodes = 1450
+f = heuristic (number of wrong ordered discs in goal) (1435ms) total nodes = 1022
+
+recursion: instantaneous(<1ms)
+
+total moves = 127 (2^n - 1)

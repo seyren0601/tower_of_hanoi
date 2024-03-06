@@ -37,7 +37,7 @@ namespace tower_of_hanoi.Classes
                     continue;
                 }
 
-                if(state == goal)
+                if (state == goal)
                 {
                     path_found = true;
                     return Close;
@@ -56,7 +56,7 @@ namespace tower_of_hanoi.Classes
                         else continue;
                         if (newState is not null) // If move is valid
                         {
-                            if (!Open_Check.ContainsKey(newState) && !Close.Any(x => x == newState)) // Skip state even if found in Open
+                            if (!Open_Check.ContainsKey(newState) && !Close.Any(x => x == newState)) // Only add to Open if state is not in Open and not in Close
                             {
                                 Open_Check[newState] = newState.g;
                                 Open.Enqueue(newState, newState);

@@ -20,7 +20,13 @@ namespace tower_of_hanoi.Classes
         public int DISC_COUNT = (int)GameInfo.disc_count;
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
-        public int f { get { return DISC_COUNT - towers[2].Count; } } 
+        public int f 
+        { 
+            get 
+            { 
+                return GetHeuristicValue();
+            } 
+        } 
         // Recommend: f = (check order of goal column)
         // + (check minimal moves required to get each disk out in current state)
         public ((int , int), State)? pre { get; set; }
@@ -98,6 +104,26 @@ namespace tower_of_hanoi.Classes
             }
             return null;
         }
+
+        int GetHeuristicValue()
+        {
+            int[] array = new int[DISC_COUNT];
+            towers[2].ToArray().CopyTo(array, 0);
+            int max_disc = DISC_COUNT;
+            int count = 0;
+            for(int i = DISC_COUNT - 1; i >= 0 ; i--)
+            {
+                if (array[i] == max_disc)
+                {
+                    count += 1;
+                }
+                if (array[i] != 0)
+                {
+                    max_disc -= 1;
+                }
+            }
+            return DISC_COUNT - count;
+        }
         #endregion
 
         #region Operators
@@ -130,8 +156,8 @@ namespace tower_of_hanoi.Classes
     {
         public int Compare(State lhs, State rhs)
         {
-            if (lhs.g == rhs.g) return lhs.f.CompareTo(rhs.f);
-            return lhs.g.CompareTo(rhs.g);
+            if(lhs.f == rhs.f) return lhs.g.CompareTo(rhs.g);
+            return lhs.f.CompareTo(rhs.f);
         }
     }
 }
