@@ -8,7 +8,6 @@ public class Menu_ChonButton : MonoBehaviour
 {
     public GameObject menu_ChonButton;
     
-    
 
     void Start()
     {
@@ -24,7 +23,22 @@ public class Menu_ChonButton : MonoBehaviour
     public void Done_Init()
     {
         Debug.Log("da click");
+        menu_ChonButton.SetActive(true);
         GameInfo.done_init = true;
+    }
+
+    public void Player_Play()
+    {
+        Debug.Log("Chọn cho Player chơi");
+        menu_ChonButton.SetActive(false);
+        GameInfo.Player_play = true;
+    }
+
+    public void May_Play() 
+    {
+        Debug.Log("Chọn cho Máy chơi");
+        menu_ChonButton.SetActive(false);
+        GameInfo.May_play = true;
     }
 
     public void setActive(bool b)

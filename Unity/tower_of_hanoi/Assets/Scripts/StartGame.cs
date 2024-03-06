@@ -13,6 +13,7 @@ using UnityEngine.Assertions.Must;
 using UnityEngine.Experimental.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static UnityEditor.Timeline.TimelinePlaybackControls;
 using static UnityEngine.Mathf;
@@ -44,6 +45,8 @@ public class StartGame : MonoBehaviour
     List<GameObject> ds_dia = new List<GameObject>();
     List<GameObject> ds_cot = new List<GameObject>();
 
+    List<Canvas> text = new List<Canvas>();
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -51,67 +54,72 @@ public class StartGame : MonoBehaviour
         SpawnDia(); 
         SpawnCot();
         SpawnDe();
-        
     }
 
     void Update()
     {
         if(!GameInfo.done_init)
         {
-            if (so_dia_hientai >= so_dia)
+            Game_Init();
+        }
+        else if (GameInfo.done_init)
+        {
+            if (!GameInfo.Player_play && !GameInfo.May_play) menu_ChonButton.setActive(true);
+        }
+    }
+
+    void Game_Init()
+    {
+        speed_tha_dia -= Time.deltaTime;
+        if (speed_tha_dia <= 0)
+        {
+            if (so_dia_hientai < so_dia)
             {
-                Debug.Log("Đã hết đĩa");
-                menu_ChonButton.setActive(true);
-            }
-            speed_tha_dia -= Time.deltaTime;
-            if (speed_tha_dia <= 0)
-            {
-                if (so_dia_hientai < so_dia)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    if (Input.GetMouseButtonDown(0))
+                    Debug.Log("Da Click");
+
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                    Debug.Log(hit.collider.name);
+
+                    if (hit && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
                     {
-                        Debug.Log("Da Click");
+                        int cot_current = Find_Index_Cot(hit.collider.name);
 
-                        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                        ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
+                        ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                        ds_dia[so_dia_hientai].transform.position = new Vector3(
+                            ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia),
+                            ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y, so_dia)),
+                            ds_cot[cot_current].transform.position.z);
 
-                        Debug.Log(hit.collider.name);
 
-                        if (hit && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
+                        if (hit.collider.name == "Cot 1")
                         {
-                            int cot_current = Find_Index_Cot(hit.collider.name);
-
-                            ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
-                            ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-                            ds_dia[so_dia_hientai].transform.position = new Vector3(
-                                ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia),
-                                ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y, so_dia)),
-                                ds_cot[cot_current].transform.position.z);
-
-
-                            if (hit.collider.name == "Cot 1")
-                            {
-                                cot1.Push(ds_dia[so_dia_hientai]);
-                                GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
-                            }
-                            else if (hit.collider.name == "Cot 2")
-                            {
-                                cot2.Push(ds_dia[so_dia_hientai]);
-                                GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
-                            }
-                            else if (hit.collider.name == "Cot 3")
-                            {
-                                cot3.Push(ds_dia[so_dia_hientai]);
-                                GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
-                            }
-                            so_dia_hientai++;
-                            speed_tha_dia = thoigian_tha_dia;
+                            cot1.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
                         }
+                        else if (hit.collider.name == "Cot 2")
+                        {
+                            cot2.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
+                        }
+                        else if (hit.collider.name == "Cot 3")
+                        {
+                            cot3.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
+                        }
+                        so_dia_hientai++;
+                        speed_tha_dia = thoigian_tha_dia;
                     }
                 }
-                
             }
-            
+            else
+            {
+                GameInfo.done_init = true;
+            }
         }
     }
 

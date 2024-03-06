@@ -29,7 +29,7 @@ public class AutoPlayScript:MonoBehaviour
     bool handled = false;
     void Update()
     {
-        if (GameInfo.done_init && !algorithm_init)
+        if (GameInfo.May_play && !algorithm_init)
         {
             cot1 = GameInfo.toado_cot1;
             cot2 = GameInfo.toado_cot2;
