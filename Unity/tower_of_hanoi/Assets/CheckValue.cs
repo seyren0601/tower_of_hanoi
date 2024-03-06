@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CheckValue : MonoBehaviour
 {
@@ -15,10 +16,11 @@ public class CheckValue : MonoBehaviour
             if (intValue >= 3 && intValue <= 10)
             {
                 //test 
-                resultText.text = "Valid input";
-                resultText.color = Color.blue;
+               /* resultText.text = "Valid input";
+                resultText.color = Color.blue;*/
 
-                // If condition correct -> scene choose state
+                // If condition correct -> scene choose state 
+                SceneManager.LoadSceneAsync(2);
             }
             else
             {

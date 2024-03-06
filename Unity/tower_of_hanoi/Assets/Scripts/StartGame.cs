@@ -22,14 +22,16 @@ public class StartGame : MonoBehaviour
     public GameObject dePrefag;
     public GameObject diaPrefag;
 
-    public static int so_dia { get; set; } = 5;
+    public static int so_dia { get; set; } = 3;
     private const int so_cot = 3;
 
     private const float heso_scale_x = 1.1f;
     private const float heso_scale_y = 1.054f;
     //private const float 
-
+    public bool da_chon = false;
     int so_dia_hientai = 0;
+    int index_dia_dang_chon;
+    int index_cot_dang_chon;
 
     Stack<GameObject> cot1 = new Stack<GameObject>();
     Stack<GameObject> cot2 = new Stack<GameObject>();
@@ -48,7 +50,7 @@ public class StartGame : MonoBehaviour
 
     void Update()
     {
-        if(!GameInfo.done_init){
+        if (!GameInfo.done_init && !GameInfo.player_play) {
             if (so_dia_hientai < so_dia)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -57,7 +59,7 @@ public class StartGame : MonoBehaviour
 
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-                    
+
                     if (hit.collider != null && hit != null && Check_Name_RayHit(hit.collider.name) && so_dia_hientai < so_dia)
                     {
                         int cot_current = Find_Index_Cot(hit.collider.name);
@@ -67,8 +69,8 @@ public class StartGame : MonoBehaviour
                         ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
                         ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                         ds_dia[so_dia_hientai].transform.position = new Vector3(
-                            ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia), 
-                            ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y,so_dia)), 
+                            ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia),
+                            ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y, so_dia)),
                             ds_cot[cot_current].transform.position.z);
 
 
@@ -88,17 +90,88 @@ public class StartGame : MonoBehaviour
                             cot3.Push(ds_dia[so_dia_hientai]);
                             GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
                         }
-                        
+
 
                         so_dia_hientai++;
                     }
-                    
+
                 }
             }
             else
             {
                 Debug.Log("Đã hết đĩa");
-                GameInfo.done_init = true;
+                //GameInfo.done_init = true;
+                GameInfo.player_play = true;
+
+            }
+        }
+        else if (GameInfo.player_play)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                //click vao collider
+                if (hit && Check_Name_RayHit(hit.collider.name))
+                {
+                    if (!da_chon)
+                    {
+                        Debug.Log("da click vao " + hit.collider.name);
+                        Debug.Log(da_chon);
+                        //click vao cot 1 lay dia tren top
+                        if (hit.collider.name == ds_cot[0].name)
+                        {
+                            index_dia_dang_chon = Find_Index_Dia(cot1.Peek().name);
+
+                        }
+                        //click vao cot 2 lay dia tren top
+                        else if (hit.collider.name == ds_cot[1].name)
+                        {
+                            index_dia_dang_chon = Find_Index_Dia(cot2.Peek().name);
+                        }
+                        //click vao cot 3 
+                        else if (hit.collider.name == ds_cot[2].name)
+                        {
+                            index_dia_dang_chon = Find_Index_Dia(cot3.Peek().name);
+                        }
+                        int Index_cot = Find_Index_Cot(hit.collider.name);
+                        float y_dua_dia_len = ds_cot[Index_cot].transform.position.y + (4f * Pow(heso_scale_y, so_dia));
+
+                        ds_dia[index_dia_dang_chon].GetComponent<Rigidbody2D>().isKinematic = true;
+                        while (ds_dia[index_dia_dang_chon].transform.position.y < y_dua_dia_len)
+                        {
+                            ds_dia[index_dia_dang_chon].transform.position += Vector3.up * 1 * Time.deltaTime;
+                        }
+                        da_chon = true;
+                    }
+                    else if (da_chon)
+                    {
+                        if (hit.collider.name == ds_cot[0].name)
+                        {
+                            cot1.Push(ds_dia[index_dia_dang_chon]);
+                            index_cot_dang_chon = Find_Index_Cot(hit.collider.name);
+                        }
+                        
+                        else if (hit.collider.name == ds_cot[1].name)
+                        {
+                            cot2.Push(ds_dia[index_dia_dang_chon]);
+                            index_cot_dang_chon = Find_Index_Cot(hit.collider.name);
+                        }
+                        
+                        else if (hit.collider.name == ds_cot[2].name)
+                        {
+                            cot3.Push(ds_dia[index_dia_dang_chon]);
+                            index_cot_dang_chon = Find_Index_Cot(hit.collider.name);
+                        }
+
+                        float x_cot_de_tha = ds_cot[index_cot_dang_chon].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
+
+                        ds_dia[index_dia_dang_chon].transform.position = new Vector2(x_cot_de_tha, ds_dia[index_dia_dang_chon].transform.position.y);
+                        ds_dia[index_dia_dang_chon].GetComponent<Rigidbody2D>().isKinematic = false;
+                        da_chon = false;
+                    }
+                }
             }
         }
     }
@@ -111,8 +184,6 @@ public class StartGame : MonoBehaviour
     void SpawnDia()
     {
         const float base_dia = 0.3f;
-        
-
         ds_dia = new List<GameObject>(so_dia);
 
         for (int i = so_dia - 1; i >= 0; i--)
@@ -185,6 +256,15 @@ public class StartGame : MonoBehaviour
         for (int i = 0; i < ds_cot.Count; i++)
         {
             if (name == ds_cot[i].name) return i;
+        }
+        return -1;
+    }
+
+    int Find_Index_Dia(string name)
+    {
+        for (int i = 0; i < ds_dia.Count; i++)
+        {
+            if (name == ds_dia[i].name) return i;
         }
         return -1;
     }
