@@ -26,7 +26,7 @@ public class StartGame : MonoBehaviour
 
     private Menu_ChonButton menu_ChonButton;
 
-    public static int so_dia { get; set; } = 5;
+    public static int so_dia { get; set; }
     private const int so_cot = 3;
 
     public float thoigian_tha_dia;

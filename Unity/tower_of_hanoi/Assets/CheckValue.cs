@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,6 +9,10 @@ public class CheckValue : MonoBehaviour
 {
     public TextMeshProUGUI resultText;
     public TMP_InputField inputField;
+
+    
+
+
     public void CheckValueInput()
     {
         string input = inputField.text;
@@ -16,10 +21,11 @@ public class CheckValue : MonoBehaviour
             if (intValue >= 3 && intValue <= 10)
             {
                 //test 
-               /* resultText.text = "Valid input";
-                resultText.color = Color.blue;*/
+                /* resultText.text = "Valid input";
+                 resultText.color = Color.blue;*/
 
                 // If condition correct -> scene choose state 
+                StartGame.so_dia = intValue;
                 SceneManager.LoadSceneAsync(2);
             }
             else
