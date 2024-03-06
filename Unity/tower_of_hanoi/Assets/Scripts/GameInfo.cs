@@ -25,7 +25,6 @@ public class GameInfo : MonoBehaviour
     {
         disc_count = StartGame.so_dia;
         done_init = false;
-        Player_play = false;
         May_play = false;
     }
 
