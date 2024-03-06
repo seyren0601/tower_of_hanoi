@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using tower_of_hanoi.Classes;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class AutoPlayScript:MonoBehaviour
@@ -17,6 +19,8 @@ public class AutoPlayScript:MonoBehaviour
 
     bool algorithm_init = false;
     Stack<GameObject>[] cot_list = new Stack<GameObject>[3];
+    Stack<int>[] cot_int_init = {new Stack<int>(), new Stack<int>(), new Stack<int>()};
+    Stack<int>[] cot_int_goal = {new Stack<int>(), new Stack<int>(), new Stack<int>()};
     List<(int, int)> Moves = new List<(int, int)>();
     
     // Start is called before the first frame update
@@ -27,7 +31,7 @@ public class AutoPlayScript:MonoBehaviour
 
     // Update is called once per frame
     bool handled = false;
-    void Update()
+    async void Update()
     {
         if (GameInfo.done_init && !algorithm_init)
         {
@@ -41,13 +45,28 @@ public class AutoPlayScript:MonoBehaviour
             cot_list[0] = stack_cot1;
             cot_list[1] = stack_cot2;
             cot_list[2] = stack_cot3;
-            Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
-            // Get list bước đi bằng thuật toán A* hoặc đệ quy
-            Moves = Algorithm.Moves; // Dùng thuật toán đệ quy
-            // Dùng thuật toán A*
+            
+            // Get list bước đi bằng thuật toán đệ quy
+            //Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
+            //Moves = Algorithm.Moves;
+
+            // Get list bước đi bằng thuật toán A*
+            cot_int_init[0] = GameInfo.cot1_int; // Khởi tạo trạng thái bắt đầu
+            cot_int_init[1] = GameInfo.cot2_int;
+            cot_int_init[2] = GameInfo.cot3_int;
+            State start = new State(cot_int_init, 0);
+
+            for(int i=(int)GameInfo.disc_count;i>0;i--){ // Khởi tạo trạng thái kết thúc
+                cot_int_goal[2].Push(i);
+            }
+            State goal = new State(cot_int_goal, 0);
+            Moves = await Algorithm.GetMoveList(await Algorithm.Solve_AStar(start, goal));
+
+            //Kết thúc khởi tạo và chạy thuật toán
             Debug.Log(Moves.Count);
             algorithm_init=true;
         }
+        // 
         if(!solved && algorithm_init && !handled){
             StartCoroutine(AutoSolve());
             if(cot_list[2].Count == disc_count) solved=true;

@@ -13,7 +13,7 @@ namespace tower_of_hanoi.Classes
     public class Algorithm:MonoBehaviour
     {
         public static List<(int, int)> Moves = new List<(int, int)>();
-        public static List<State>? Solve_AStar(State start, State goal)
+        public static async Task<List<State>>? Solve_AStar(State start, State goal)
         {
             bool path_found = false;
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
@@ -74,15 +74,16 @@ namespace tower_of_hanoi.Classes
             return null;
         }
 
-        public static List<(int, int)> GetMoveList(List<State> Close){
+        public static async Task<List<(int, int)>> GetMoveList(List<State> Close){
             List<(int, int)> Moves = new List<(int, int)>();
             State goal = Close.Last();
             do{
                 int from = goal.pre.Value.Item1.Item1;
                 int to = goal.pre.Value.Item1.Item2;
-                Moves.Insert(0, (from, to));
+                Moves.Add((from, to));
                 goal = goal.pre.Value.Item2;
             }while(goal.pre != null);
+            Moves.Reverse();
             return Moves;
         }
 

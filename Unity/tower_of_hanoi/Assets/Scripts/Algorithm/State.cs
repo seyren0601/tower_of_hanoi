@@ -14,10 +14,10 @@ using UnityEngine;
 namespace tower_of_hanoi.Classes
 {
     [Serializable]
-    public class State:MonoBehaviour
+    public class State
     {
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 10;
+        public int DISC_COUNT = (int)GameInfo.disc_count;
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
         public int f { get { return DISC_COUNT - towers[2].Count; } } 
@@ -88,11 +88,12 @@ namespace tower_of_hanoi.Classes
         {
             if (this.GetType().IsSerializable)
             {
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, MaxDepth = int.MaxValue };
                 // Serialize twice to normalize the stack
                 var json = JsonConvert.SerializeObject(this);
-                State state = JsonConvert.DeserializeObject<State>(json);
+                State state = JsonConvert.DeserializeObject<State>(json, settings);
                 var json2 = JsonConvert.SerializeObject(state);
-                State state_final = JsonConvert.DeserializeObject<State>(json2);
+                State state_final = JsonConvert.DeserializeObject<State>(json2, settings);
                 return state_final;
             }
             return null;

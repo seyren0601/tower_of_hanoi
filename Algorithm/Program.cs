@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Resources;
 using tower_of_hanoi.Classes;
 
-/*
+
 // Solution with A*
 // Define start state
 Stack<int>[] tower_init = { new Stack<int>(), new Stack<int>(), new Stack<int>()};
@@ -51,13 +51,12 @@ else
 {
     Console.WriteLine("path not found");
 }
-*/
 
 
 // Solution with recursion
-Algorithm.Solve_Recursion(State.DISC_COUNT, 0, 2, 1);
+/*Algorithm.Solve_Recursion(State.DISC_COUNT, 0, 2, 1);
 Console.WriteLine("Moves: " + Algorithm.Moves.Count);
 foreach(var move in Algorithm.Moves)
 {
     Console.WriteLine(move.Item1 + " to " +  move.Item2);
-}
+}*/

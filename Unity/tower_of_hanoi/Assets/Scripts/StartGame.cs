@@ -76,17 +76,20 @@ public class StartGame : MonoBehaviour
                         {
                             cot1.Push(ds_dia[so_dia_hientai]);
                             GameInfo.cot1.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot1_int.Push(so_dia -  so_dia_hientai);
                             Debug.Log(GameInfo.cot1.Peek().name);
                         }
                         else if (hit.collider.name == "Cot 2")
                         {
                             cot2.Push(ds_dia[so_dia_hientai]);
                             GameInfo.cot2.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot2_int.Push(so_dia -  so_dia_hientai);
                         }
                         else if (hit.collider.name == "Cot 3")
                         {
                             cot3.Push(ds_dia[so_dia_hientai]);
                             GameInfo.cot3.Push(ds_dia[so_dia_hientai]);
+                            GameInfo.cot3_int.Push(so_dia -  so_dia_hientai);
                         }
                         
 

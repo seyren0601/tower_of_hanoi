@@ -16,7 +16,7 @@ namespace tower_of_hanoi.Classes
     internal class State
     {
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 10;
+        public const int DISC_COUNT = 5;
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
         public int f { get { return DISC_COUNT - towers[2].Count; } } 
