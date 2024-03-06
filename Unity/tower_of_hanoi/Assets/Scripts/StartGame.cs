@@ -64,7 +64,7 @@ public class StartGame : MonoBehaviour
         }
         else if (GameInfo.done_init)
         {
-            if (!GameInfo.Player_play && !GameInfo.May_play) menu_ChonButton.setActive(true);
+            if (!GameInfo.May_play) menu_ChonButton.setActive(true);
         }
     }
 
