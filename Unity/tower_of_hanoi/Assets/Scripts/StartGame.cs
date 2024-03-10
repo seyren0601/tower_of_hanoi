@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Serialization;
 using System.Xml.Schema;
+using TMPro;
 using tower_of_hanoi.Classes;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Experimental.AI;
@@ -40,14 +44,15 @@ public class StartGame : MonoBehaviour
     int index_dia_dang_chon;
     int index_cot_dang_chon;
 
+    // tạo stack cho từng cột
     Stack<GameObject> cot1 = new Stack<GameObject>();
     Stack<GameObject> cot2 = new Stack<GameObject>();
     Stack<GameObject> cot3 = new Stack<GameObject>();
 
+    // khởi tạo danh sách đĩa
     List<GameObject> ds_dia = new List<GameObject>();
+    // khởi tạo danh sách cột
     List<GameObject> ds_cot = new List<GameObject>();
-
-    List<Canvas> text = new List<Canvas>();
 
     // Start is called before the first frame update
     void Awake()
@@ -90,13 +95,14 @@ public class StartGame : MonoBehaviour
                     {
                         int cot_current = Find_Index_Cot(hit.collider.name);
 
-                        ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0);
-                        ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-                        ds_dia[so_dia_hientai].transform.position = new Vector3(
+                        ds_dia[so_dia_hientai].transform.position = new Vector3(0, 0, 0); // đoạn code khởi tạo vị trí cho các đĩa về một nơi định sẵn
+                        ds_dia[so_dia_hientai].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic; // gọi tới component Rigibody set bodytype = Dynamic để cho đĩa rơi xuống
+                        ds_dia[so_dia_hientai].transform.position = new Vector3( // sau dòng code set cho đĩa rơi thì dịch đĩa tơi ngay giữa cột vừa click
                             ds_cot[cot_current].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia),
                             ds_cot[cot_current].transform.position.y + (4f * Pow(heso_scale_y, so_dia)),
-                            ds_cot[cot_current].transform.position.z);
+                            ds_cot[cot_current].transform.position.z); 
 
+                        ChangedText_Follow_Sprite(ds_dia[so_dia_hientai], (so_dia - so_dia_hientai).ToString()); // phương thức xử lý thêm số vào đĩa
 
                         if (hit.collider.name == "Cot 1")
                         {
@@ -129,6 +135,48 @@ public class StartGame : MonoBehaviour
         }
     }
 
+    void ChangedText_Follow_Sprite(GameObject obj, string text)
+    {
+        // Kiểm tra xem obj có tồn tại không
+        if (obj != null && obj.gameObject != null && obj.gameObject.transform.childCount > 0)
+        {
+            Transform firstChild = obj.gameObject.transform.GetChild(0);
+
+            // Kiểm tra xem có phần tử con đầu tiên không
+            if (firstChild != null && firstChild.childCount > 0)
+            {
+                Transform secondChild = firstChild.transform.GetChild(0);
+
+                // Kiểm tra xem có phần tử con thứ hai không
+                if (secondChild != null)
+                {
+                    TextMeshProUGUI textMesh = secondChild.GetComponent<TextMeshProUGUI>();
+
+                    // Kiểm tra xem có TextMeshPro component không
+                    if (textMesh != null)
+                    {
+                        textMesh.text = text;
+                    }
+                    else
+                    {
+                        Debug.LogError("Không tìm thấy component TextMeshPro.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Không tìm thấy phần tử con thứ hai.");
+                }
+            }
+            else
+            {
+                Debug.LogError("Không tìm thấy phần tử con đầu tiên.");
+            }
+        }
+        else
+        {
+            Debug.LogError("GameObject không tồn tại hoặc không có transform hoặc không có phần tử con.");
+        }
+    }
     void SpawnDia()
     {
         float base_dia = diaPrefag.transform.localScale.x;
@@ -141,6 +189,7 @@ public class StartGame : MonoBehaviour
         {
             dia = Instantiate(diaPrefag);
             dia.transform.localScale = new Vector2(base_dia * Pow(heso_scale_x, i + 1), base_dia * Pow(heso_scale_y, i + 1));
+            
             dia.name = "" + (i + 1);
             ds_dia.Add(dia);
             Debug.Log("da them vao list");
