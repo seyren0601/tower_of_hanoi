@@ -11,7 +11,7 @@ public class AutoPlayScript:MonoBehaviour
     bool solved = false;
     Vector2 cot1;
     Vector2 cot2;
-    Vector3 cot3;
+    Vector2 cot3;
     Stack<GameObject> stack_cot1;
     Stack<GameObject> stack_cot2;
     Stack<GameObject> stack_cot3;
@@ -49,11 +49,11 @@ public class AutoPlayScript:MonoBehaviour
                 cot_list[2] = stack_cot3;
                 
                 // Get list bước đi bằng thuật toán đệ quy
-                //Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
-                //Moves = Algorithm.Moves;
+                Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
+                Moves = Algorithm.Moves;
 
                 // Get list bước đi bằng thuật toán A*
-                cot_int_init[0] = GameInfo.cot1_int; // Khởi tạo trạng thái bắt đầu
+                /*cot_int_init[0] = GameInfo.cot1_int; // Khởi tạo trạng thái bắt đầu
                 cot_int_init[1] = GameInfo.cot2_int;
                 cot_int_init[2] = GameInfo.cot3_int;
                 State start = new State(cot_int_init, 0);
@@ -62,7 +62,7 @@ public class AutoPlayScript:MonoBehaviour
                     cot_int_goal[2].Push(i);
                 }
                 State goal = new State(cot_int_goal, 0);
-                Moves = await Algorithm.GetMoveList(await Algorithm.Solve_AStar(start, goal));
+                Moves = await Algorithm.GetMoveList(await Algorithm.Solve_AStar(start, goal));*/
 
                 //Kết thúc khởi tạo và chạy thuật toán
                 Debug.Log(Moves.Count);
@@ -77,11 +77,43 @@ public class AutoPlayScript:MonoBehaviour
         
     }
 
-    void MoveDisc(int from, int to)
+    IEnumerator MoveDisc(int from, int to)
     {
         GameObject obj_from = cot_list[from].Pop();
         cot_list[to].Push(obj_from);
-        obj_from.transform.position = (to == 0) ? cot1 : (to == 1) ? cot2 : cot3;
+        obj_from.GetComponent<Rigidbody2D>().isKinematic = true;
+        StartCoroutine(animationY(obj_from, cot1.y));
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(animationX(obj_from, (to==0)?cot1.x:(to==1)?cot2.x:cot3.x));
+        yield return new WaitForSeconds(0.5f);
+        obj_from.GetComponent<Rigidbody2D>().isKinematic = false;
+    }
+
+    IEnumerator animationY(GameObject obj,float y){
+        while(obj.transform.position.y < y){
+            obj.transform.position += new Vector3(0, 0.1f, 0);
+            yield return new WaitForSeconds(0.005f);
+        }
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    IEnumerator animationX(GameObject obj, float x){
+        if(obj.transform.position.x < x){
+            while(obj.transform.position.x < x){
+                obj.transform.position += new Vector3(0.1f , 0, 0);
+                yield return new WaitForSeconds(0.005f);
+            }
+        }
+        else{
+            while(obj.transform.position.x > x){
+                obj.transform.position += new Vector3(-0.1f , 0, 0);
+                yield return new WaitForSeconds(0.005f);
+            }
+        }
+        if(obj.transform.position.x < x) obj.transform.position = new Vector2(x, obj.transform.position.y);
+        else obj.transform.position = new Vector2(x, obj.transform.position.y);
+        yield return new WaitForSeconds(0.5f);
+        
     }
 
     IEnumerator AutoSolve()
@@ -90,8 +122,8 @@ public class AutoPlayScript:MonoBehaviour
         for (int i = 0; i < Moves.Count; i++)
         {
             (int, int) move = Moves[i];
-            MoveDisc(move.Item1, move.Item2);
-            yield return new WaitForSecondsRealtime(1);
+            StartCoroutine(MoveDisc(move.Item1, move.Item2));
+            yield return new WaitForSecondsRealtime(2);
         }
         solved = true;
     }
