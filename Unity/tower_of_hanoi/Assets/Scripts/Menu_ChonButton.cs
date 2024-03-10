@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEditor.AI;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class Menu_ChonButton : MonoBehaviour
@@ -31,6 +32,7 @@ public class Menu_ChonButton : MonoBehaviour
     {
         Debug.Log("Chọn cho Player chơi");
         menu_ChonButton.SetActive(false);
+        GameInfo.Player_play = true;
     }
 
     public void May_Play() 

@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/tower_of_hanoi.unity
     guid: 2c5ae940f66c40448936e6d3c5da313f
+  - enabled: 1
+    path: Assets/Scenes/Player_Won.unity
+    guid: 3d3f08024bf780240a73e93863068064
   m_configObjects: {}
