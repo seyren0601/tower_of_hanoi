@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using tower_of_hanoi.Classes;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AutoPlayScript:MonoBehaviour
@@ -47,6 +49,7 @@ public class AutoPlayScript:MonoBehaviour
                 cot_list[0] = stack_cot1;
                 cot_list[1] = stack_cot2;
                 cot_list[2] = stack_cot3;
+                solved = false;
                 
                 // Get list bước đi bằng thuật toán đệ quy
                 Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
@@ -79,13 +82,17 @@ public class AutoPlayScript:MonoBehaviour
 
     IEnumerator MoveDisc(int from, int to)
     {
+
         GameObject obj_from = cot_list[from].Pop();
+        Vector2 toado_to = (to==0)?cot1:(to==1)?cot2:cot3;
+        float distanceX = Math.Abs(obj_from.transform.position.x - toado_to.x);
+        float distanceY = Math.Abs(obj_from.transform.position.y - toado_to.y);
         cot_list[to].Push(obj_from);
         obj_from.GetComponent<Rigidbody2D>().isKinematic = true;
         StartCoroutine(animationY(obj_from, cot1.y));
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(distanceY/20f + 0.1f);
         StartCoroutine(animationX(obj_from, (to==0)?cot1.x:(to==1)?cot2.x:cot3.x));
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(distanceX/20f + 0.1f);
         obj_from.GetComponent<Rigidbody2D>().isKinematic = false;
     }
 
@@ -94,7 +101,6 @@ public class AutoPlayScript:MonoBehaviour
             obj.transform.position += new Vector3(0, 0.1f, 0);
             yield return new WaitForSeconds(0.005f);
         }
-        yield return new WaitForSeconds(0.5f);
     }
 
     IEnumerator animationX(GameObject obj, float x){
@@ -112,7 +118,6 @@ public class AutoPlayScript:MonoBehaviour
         }
         if(obj.transform.position.x < x) obj.transform.position = new Vector2(x, obj.transform.position.y);
         else obj.transform.position = new Vector2(x, obj.transform.position.y);
-        yield return new WaitForSeconds(0.5f);
         
     }
 
