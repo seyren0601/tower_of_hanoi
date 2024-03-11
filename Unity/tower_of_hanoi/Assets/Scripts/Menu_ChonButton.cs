@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor.AI;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class Menu_ChonButton : MonoBehaviour

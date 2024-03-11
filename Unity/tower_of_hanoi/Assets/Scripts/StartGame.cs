@@ -11,8 +11,6 @@ using System.Xml.Schema;
 using TMPro;
 using tower_of_hanoi.Classes;
 using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Experimental.AI;
@@ -21,7 +19,6 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
-using static UnityEditor.Timeline.TimelinePlaybackControls;
 using static UnityEngine.Mathf;
 
 public class StartGame : MonoBehaviour
