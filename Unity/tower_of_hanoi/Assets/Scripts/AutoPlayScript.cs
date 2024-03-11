@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using tower_of_hanoi.Classes;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AutoPlayScript:MonoBehaviour
 {
@@ -32,7 +34,7 @@ public class AutoPlayScript:MonoBehaviour
     }
 
     // Update is called once per frame
-    bool handled = false;
+    bool handled;
     async void Update()
     {
         if(GameInfo.May_play)
@@ -49,9 +51,12 @@ public class AutoPlayScript:MonoBehaviour
                 cot_list[0] = stack_cot1;
                 cot_list[1] = stack_cot2;
                 cot_list[2] = stack_cot3;
+                handled = false;
                 solved = false;
+                algorithm_init = false;
                 
                 // Get list bước đi bằng thuật toán đệ quy
+                Algorithm.Moves = new List<(int, int)>();
                 Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
                 Moves = Algorithm.Moves;
 
@@ -74,7 +79,6 @@ public class AutoPlayScript:MonoBehaviour
             // 
             if(!solved && algorithm_init && !handled){
                 StartCoroutine(AutoSolve());
-                if(cot_list[2].Count == disc_count) solved=true;
             }
         }
         
@@ -130,7 +134,8 @@ public class AutoPlayScript:MonoBehaviour
             StartCoroutine(MoveDisc(move.Item1, move.Item2));
             yield return new WaitForSecondsRealtime(2);
         }
-        solved = true;
+        yield return new WaitForSecondsRealtime(1);
+        SceneManager.LoadScene(3);
     }
 
     void NextMove(){

@@ -12,7 +12,7 @@ namespace tower_of_hanoi.Classes
 {
     public class Algorithm:MonoBehaviour
     {
-        public static List<(int, int)> Moves = new List<(int, int)>();
+        public static List<(int, int)> Moves;
         public static async Task<List<State>>? Solve_AStar(State start, State goal)
         {
             bool path_found = false;

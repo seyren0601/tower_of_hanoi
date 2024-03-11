@@ -68,6 +68,8 @@ public class StartGame : MonoBehaviour
         SpawnDia(); 
         SpawnCot();
         SpawnDe();
+        GameObject mainMenu = GameObject.FindGameObjectWithTag("Main menu theme");
+        Destroy(mainMenu);
     }
 
     void Update()
