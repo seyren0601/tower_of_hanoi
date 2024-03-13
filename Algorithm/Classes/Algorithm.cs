@@ -16,18 +16,8 @@ namespace tower_of_hanoi.Classes
         public static List<(int, int)> Moves = new List<(int, int)>();
 
         // Hàm giải bài toán Tháp Hà Nội bằng thuật giải A*
-        public static List<State>? Solve_AStar(State start, List<State> goals)
+        public static List<State>? Solve_AStar(State start, State goal)
         {
-            int intermediate_goal;
-            for(int i = 0; i < State.NUM_OF_TOWER; i++)
-            {
-                int[] tower = start.towers[i].ToArray();
-                if (tower[tower.Length - 1] == State.DISC_COUNT - 1)
-                {
-                    intermediate_goal = i;
-                    break;
-                }
-            }
             // Open là một PriorityQueue, với độ ưu tiên là f
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
 
@@ -58,7 +48,7 @@ namespace tower_of_hanoi.Classes
                     continue;
                 }
 
-                if (goals.Any(x => x == state)) // Nếu trạng thái là trạng thái đích, trả về Close
+                if (state == goal) // Nếu trạng thái là trạng thái đích, trả về Close
                 {
                     return Close;
                 }

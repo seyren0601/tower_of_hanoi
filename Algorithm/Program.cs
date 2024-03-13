@@ -6,64 +6,65 @@ using System;
 using System.Threading.Tasks;
 using System.Timers;
 
-
-// Solution with A*
-// Define start state
-Stack<int>[] tower_init = { new Stack<int>(), new Stack<int>(), new Stack<int>()};
-Stack<int> st = new Stack<int>();
-Random rand = new Random();
-for(int i = State.DISC_COUNT; i > 0; i--)
+long total_time = 0;
+int instances = 0;
+Parallel.For(0, 1000, number =>
 {
-    tower_init[rand.Next() % 3].Push(i);
-}
-
-State init = new State(tower_init, 0); // Create start state
-
-// Define goal states
-int intermediate_goal;
-for (int i = 0; i < State.NUM_OF_TOWER; i++)
-{
-    int[] tower = init.towers[i].ToArray();
-    if (tower[tower.Length - 1] == State.DISC_COUNT - 1)
+    // Solution with A*
+    // Define start state
+    Stack<int>[] tower_init = { new Stack<int>(), new Stack<int>(), new Stack<int>() };
+    Stack<int> st = new Stack<int>();
+    Random rand = new Random();
+    for (int i = State.DISC_COUNT; i > 0; i--)
     {
-        intermediate_goal = i;
-        break;
+        tower_init[rand.Next() % 3].Push(i);
     }
-}
-// all discs in 3rd column
-Stack<int>[] tower_goal1 = { new Stack<int>(), new Stack<int>(), new Stack<int>() };
-st = new Stack<int>();
-for (int i = State.DISC_COUNT; i > 0; i--)
-{
-    st.Push(i);
-}
-tower_goal1[2] = st;
 
-// all discs in 2nd column
-Stack<int>[] tower_goal2 = { new Stack<int>(), new Stack<int>(), new Stack<int>() };
-tower_goal2[1] = st;
+    State init = new State(tower_init, 0); // Create start state
 
-// all discs in 3rd column
-Stack<int>[] tower_goal3 = { new Stack<int>(), new Stack<int>(), new Stack<int>() };
-tower_goal3[0] = st;
+    //Define goal state
+    /*for (int i = 0; i < State.NUM_OF_TOWER; i++)
+    {
+        int[] tower = init.towers[i].ToArray();
+        if (tower.Length > 0 && tower[tower.Length - 1] == State.DISC_COUNT)
+        {
+            State.goal_tower = i;
+            break;
+        }
+    }*/
+    State.goal_tower = 2;
 
-List<State> goals = [ new State(tower_goal1, 0), new State(tower_goal2, 0), new State(tower_goal3, 0) ];
+    // all discs in goal column
+    Stack<int>[] tower_goal = { new Stack<int>(), new Stack<int>(), new Stack<int>() };
+    st = new Stack<int>();
+    for (int i = State.DISC_COUNT; i > 0; i--)
+    {
+        st.Push(i);
+    }
+    tower_goal[State.goal_tower] = st;
 
-System.Timers.Timer timer = new System.Timers.Timer(1);
-int miliseconds = 0;
-timer.Elapsed += async (sender, e) => miliseconds += 1;
-timer.Start();
-List<State>? Close = Algorithm.Solve_AStar(init, goals); // Get list of moves checked (include path to goal)
-timer.Stop();
+    State goal_state = new State(tower_goal, 0);
 
+    var watch = System.Diagnostics.Stopwatch.StartNew();
+    List<State>? Close = Algorithm.Solve_AStar(init, goal_state); // Get list of moves checked (include path to goal)
+    watch.Stop();
+    total_time += watch.ElapsedMilliseconds;
+    instances += 1;
+    Console.Clear();
+    Console.WriteLine($"Done {instances}/1000 instances");
+});
+
+Console.WriteLine($"Average A* runtime: {(float)total_time / 1000}");
+
+
+/*
+// Print stats
 Console.WriteLine("Start state: ");
 init.PrintTowers();
-
 
 // Solution with recursion
 //System.Timers.Timer timer = new System.Timers.Timer(1);
 //int miliseconds = 0;
-timer.Elapsed += async (sender, e) => miliseconds += 1;
 State intermediate = Close!.Last();
 int start, aux, goal;
 if (intermediate.towers[0].Count > 0)
@@ -83,11 +84,11 @@ else if (intermediate.towers[1].Count > 0)
 else
 {
     AStartPrintPath(Close);
-}
+}*/
 
 void AStartPrintPath(List<State> Close)
 {
-    Console.WriteLine($"Algorithm runs in {miliseconds} miliseconds");
+    //Console.WriteLine($"Algorithm runs in {watch.ElapsedMilliseconds} miliseconds");
     Console.WriteLine($"Total nodes checked: {Close.Count}\n");
     int count = 0;
     State end = Close.Last();
@@ -98,7 +99,7 @@ void AStartPrintPath(List<State> Close)
         end = end.pre.Value.Item2;
         count += 1;
     }
-    path.Add(init);
+    //path.Add(init);
     path.Reverse();
     Console.WriteLine($"Total moves: {count}");
     foreach (State state in path)
@@ -112,7 +113,8 @@ void AStartPrintPath(List<State> Close)
 void RecursionPrintPath(int start, int aux, int goal)
 {
     Algorithm.Solve_Recursion(State.DISC_COUNT, start, goal, aux);
-    Console.WriteLine($"A* runs for {miliseconds} miliseconds");
+    //Console.WriteLine($"A* runs for {watch.ElapsedMilliseconds} miliseconds");
+   // Console.WriteLine($"Total nodes checked: {Close.Count}\n");
     Console.WriteLine("Moves: " + Algorithm.Moves.Count);
     foreach (var move in Algorithm.Moves)
     {

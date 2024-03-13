@@ -17,7 +17,8 @@ namespace tower_of_hanoi.Classes
     {
         // Các giá trị số lượng đĩa và cột để thử nghiệm
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 7;
+        public const int DISC_COUNT = 6;
+        public static int goal_tower { get; set; }
 
 
         // Cấu trúc dữ liệu để lưu tình trạng các cột
@@ -33,7 +34,7 @@ namespace tower_of_hanoi.Classes
         { 
             get
             {
-                return GetHeuristicValue();
+                return GetHeuristicValue(goal_tower);
             } 
         }
         // pre là một tuple chứa:
@@ -126,14 +127,10 @@ namespace tower_of_hanoi.Classes
         }
 
         // Hàm tính giá trị heuristic
-        int GetHeuristicValue() // Count the number of wrong ordered discs in goal
+        int GetHeuristicValue(int goal_tower) // Count the number of wrong ordered discs in goal
         {
-            // Tính số đĩa nằm sai vị trí ở mỗi cột
-            int wrong_discs_num_1 = CountWrongDiscs(towers[2]);
-            int wrong_discs_num_2 = CountWrongDiscs(towers[1]);
-            int wrong_discs_num_3 = CountWrongDiscs(towers[0]);
             // Heuristic bằng tổng số đĩa nằm sai vị trí ở mỗi cột
-            return wrong_discs_num_1 + wrong_discs_num_2 + wrong_discs_num_3;
+            return CountWrongDiscs(towers[goal_tower]);
         }
 
         // Hàm tính số đĩa nằm sai vị trí trong 1 cột
