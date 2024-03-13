@@ -17,7 +17,7 @@ namespace tower_of_hanoi.Classes
     {
         // Các giá trị số lượng đĩa và cột để thử nghiệm
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 6;
+        public const int DISC_COUNT = 7;
 
 
         // Cấu trúc dữ liệu để lưu tình trạng các cột
@@ -128,28 +128,52 @@ namespace tower_of_hanoi.Classes
         // Hàm tính giá trị heuristic
         int GetHeuristicValue() // Count the number of wrong ordered discs in goal
         {
+            // Tính số đĩa nằm sai vị trí ở mỗi cột
+            int wrong_discs_num_1 = CountWrongDiscs(towers[2]);
+            int wrong_discs_num_2 = CountWrongDiscs(towers[1]);
+            int wrong_discs_num_3 = CountWrongDiscs(towers[0]);
+            // Heuristic bằng tổng số đĩa nằm sai vị trí ở mỗi cột
+            return wrong_discs_num_1 + wrong_discs_num_2 + wrong_discs_num_3;
+        }
+
+        // Hàm tính số đĩa nằm sai vị trí trong 1 cột
+        int CountWrongDiscs(Stack<int> tower)
+        {
+            // Tạo array tượng trưng cho trường hợp chuẩn của cột (số phần tử = tổng số đĩa)
             int[] array = new int[DISC_COUNT];
-            towers[2].ToArray().CopyTo(array, 0);
+            // Copy số đĩa có trong cột vào array
+            // => đĩa nhỏ nhất nằm ở vị trí đầu của mảng
+            // => mảng được sắp xếp tăng dần
+            // => nếu không đủ số lượng đĩa, các phần tử sau đó sẽ có giá trị default = 0
+            tower.ToArray().CopyTo(array, 0);
+            // Giá trị đĩa lớn nhất
             int max_disc = DISC_COUNT;
             int count = 0;
-            for(int i = DISC_COUNT - 1; i >= 0 ; i--)
+            // Lặp qua mảng từ chỉ số lớn nhất
+            for (int i = DISC_COUNT - 1; i >= 0; i--)
             {
+                // Nếu giá trị tại chỉ số bằng với giá trị lớn nhất hiện tại
+                // => đĩa nằm đúng vị trí
+                // => cộng biến count lên 1
                 if (array[i] == max_disc)
                 {
                     count += 1;
                 }
+                // Nếu phần tử hiện tại != 0 (phần tử đang xét không phải đĩa) => trừ giá trị lớn nhất đi 1
+                // để tiếp tục kiểm tra
                 if (array[i] != 0)
                 {
                     max_disc -= 1;
                 }
             }
+            // Trả về số đĩa nằm sai vị trí = tổng số đĩa - số đĩa đúng vị trí
             return DISC_COUNT - count;
         }
         #endregion
 
         #region Operators
         // Overload operator == và != để nhận biết hai trạng thái giống nhau
-        // dựa trên các stack trong hai trạng thái
+        // dựa trên các stack (cột) trong hai trạng thái
         public static bool operator ==(State lhs, State rhs)
         {
             var lhs_clone = lhs.Clone();
