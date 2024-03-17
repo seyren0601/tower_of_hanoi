@@ -46,6 +46,7 @@ public class StartGame : MonoBehaviour
     int cot_dang_click;
 
     int index_dia_tren_cung;
+    bool xu_li_click = true;
 
     // tạo stack cho từng cột
     Stack<GameObject> cot1 = new Stack<GameObject>();
@@ -84,107 +85,127 @@ public class StartGame : MonoBehaviour
 
     void Player()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (xu_li_click)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-            Debug.Log(hit.collider.name);
-
-            // neu click vao obj va click vao cot dau tien
-            if (hit && Check_Name_RayHit(hit.collider.name) && !da_chon)
+            if (Input.GetMouseButtonDown(0))
             {
-                cot_dang_click = Find_Index_Cot(hit.collider.name);             
-                float y = hit.collider.transform.position.y + (4f * Pow(heso_scale_y, so_dia));
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+                Debug.Log(hit.collider.name);
 
-                //neu click vao cot 1 thi lay index cua dia dc dua len va stack cot1 pop dia ra
-                if (hit.collider.name == "Cot 1")
+                // neu click vao obj va click vao cot dau tien
+                if (hit && Check_Name_RayHit(hit.collider.name) && !da_chon)
                 {
-                    index_dia_tren_cung = Find_Index_Dia(cot1.Peek().name);
-                    cot1.Pop();
-                }
-                //neu click vao cot 2 thi lay index cua dia dc dua len va stack cot2 pop dia ra
-                else if (hit.collider.name == "Cot 2")
-                {
-                    index_dia_tren_cung = Find_Index_Dia(cot2.Peek().name);
-                    cot2.Pop();
-                }
-                //neu click vao cot 3 thi lay index cua dia dc dua len va stack cot3 pop dia ra
-                else if (hit.collider.name == "Cot 3")
-                {
-                    index_dia_tren_cung = Find_Index_Dia(cot3.Peek().name);
-                    cot3.Pop();
-                }             
+                    cot_dang_click = Find_Index_Cot(hit.collider.name);
+                    float y = hit.collider.transform.position.y + (4f * Pow(heso_scale_y, so_dia));
 
-                //set trang thai cho dia dc chon thanh 0 co trong luc va di chuyen dia len
-                ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = true;
-                DiChuyen_Len(index_dia_tren_cung, y);
-                da_chon = true;
-            }
-
-            // neu click vao obj va da click vao cot tiep theo
-            else if (hit && Check_Name_RayHit(hit.collider.name) && da_chon)
-            {
-                float x, y;
-                //lay index cot dang click vao tiep theo
-                int index_cot_dang_click = Find_Index_Cot(hit.collider.name);
-                if (hit.collider.name == "Cot 1")
-                {
-                    //lay dc vi tri x o giua cot 1
-                    x = ds_cot[index_cot_dang_click].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
-                }
-                else if (hit.collider.name == "Cot 2")
-                {
-                    //lay dc vi tri x o giua cot 2
-                    x = ds_cot[index_cot_dang_click].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
-                }
-                else
-                {
-                    //lay dc vi tri x o giua cot 3
-                    x = ds_cot[index_cot_dang_click].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
-                }
-
-                //kiem tra xem cot dang click co rong ko
-                if ((hit.collider.name == "Cot 1" ? cot1.Count : hit.collider.name == "Cot 2" ? cot2.Count : cot3.Count) != 0) //cot khong rong  
-                {
-                    //Nếu tên của collider được click là "Cot 1-2-3", thì stackPeekName sẽ là tên của đỉnh của cot1-2-3. 
-                    string stackPeekName = hit.collider.name == "Cot 1" ? cot1.Peek().name : hit.collider.name == "Cot 2" ? cot2.Peek().name : cot3.Peek().name;
-                    if (int.TryParse(stackPeekName, out int stackPeekValue) && int.TryParse(ds_dia[index_dia_tren_cung].name, out int dsCotValue))
+                    //neu click vao cot 1 thi lay index cua dia dc dua len va stack cot1 pop dia ra
+                    if (hit.collider.name == "Cot 1")
                     {
-                        //kiểm tra nếu  đĩa ở cột đang chọn > đĩa đã đưa lên ở trên thì cho phép di chuyển
-                        if (stackPeekValue > dsCotValue)                        
-                        {
-                            DiChuyen_TraiPhai(index_dia_tren_cung, x);
-                            //di chuyển xong thì cột sẽ push đĩa dc thả xuống vào stack
-                            (hit.collider.name == "Cot 1" ? cot1 : hit.collider.name == "Cot 2" ? cot2 : cot3).Push(ds_dia[index_dia_tren_cung]);
-                            ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = false;
-                        }
-                        else // nguoc lai k cho phep di chuyen 
-                        {
-                            ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = false;
-                            //push vao lai vi tri cu
-                            (ds_cot[cot_dang_click].name == "Cot 1" ? cot1 : ds_cot[cot_dang_click].name == "Cot 2" ? cot2 : cot3).Push(ds_dia[index_dia_tren_cung]);
+                        index_dia_tren_cung = Find_Index_Dia(cot1.Peek().name);
+                        cot1.Pop();
+                    }
+                    //neu click vao cot 2 thi lay index cua dia dc dua len va stack cot2 pop dia ra
+                    else if (hit.collider.name == "Cot 2")
+                    {
+                        index_dia_tren_cung = Find_Index_Dia(cot2.Peek().name);
+                        cot2.Pop();
+                    }
+                    //neu click vao cot 3 thi lay index cua dia dc dua len va stack cot3 pop dia ra
+                    else if (hit.collider.name == "Cot 3")
+                    {
+                        index_dia_tren_cung = Find_Index_Dia(cot3.Peek().name);
+                        cot3.Pop();
+                    }
 
-                        }
-                    }                    
-                }
-                else // nguoc lai cot rong stack empty thi k can so sanh dia
+                    //set trang thai cho dia dc chon thanh 0 co trong luc va di chuyen dia len
+                    ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = true;
+                    DiChuyen_Len(index_dia_tren_cung, y);
+                    da_chon = true;
+
+					//đợi một khoảng time trước khi cho phép click tiếp theo
+					xu_li_click = false;
+					StartCoroutine(ClickAfterDelay());
+				}
+
+                // neu click vao obj va da click vao cot tiep theo
+                else if (hit && Check_Name_RayHit(hit.collider.name) && da_chon)
                 {
-                    DiChuyen_TraiPhai(index_dia_tren_cung, x);
-                    (hit.collider.name == "Cot 1" ? cot1 : hit.collider.name == "Cot 2" ? cot2 : cot3).Push(ds_dia[index_dia_tren_cung]);
-                    ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = false;
+                    float x, y;
+                    //lay index cot dang click vao tiep theo
+                    int index_cot_dang_click = Find_Index_Cot(hit.collider.name);
+                    if (hit.collider.name == "Cot 1")
+                    {
+                        //lay dc vi tri x o giua cot 1
+                        x = ds_cot[index_cot_dang_click].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
+                    }
+                    else if (hit.collider.name == "Cot 2")
+                    {
+                        //lay dc vi tri x o giua cot 2
+                        x = ds_cot[index_cot_dang_click].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
+                    }
+                    else
+                    {
+                        //lay dc vi tri x o giua cot 3
+                        x = ds_cot[index_cot_dang_click].transform.position.x - 0.5f * Pow(heso_scale_y, so_dia);
+                    }
+
+                    //kiem tra xem cot dang click co rong ko
+                    if ((hit.collider.name == "Cot 1" ? cot1.Count : hit.collider.name == "Cot 2" ? cot2.Count : cot3.Count) != 0) //cot khong rong  
+                    {
+                        //Nếu tên của collider được click là "Cot 1-2-3", thì stackPeekName sẽ là tên của đỉnh của cot1-2-3. 
+                        string stackPeekName = hit.collider.name == "Cot 1" ? cot1.Peek().name : hit.collider.name == "Cot 2" ? cot2.Peek().name : cot3.Peek().name;
+                        if (int.TryParse(stackPeekName, out int stackPeekValue) && int.TryParse(ds_dia[index_dia_tren_cung].name, out int dsCotValue))
+                        {
+                            //kiểm tra nếu  đĩa ở cột đang chọn > đĩa đã đưa lên ở trên thì cho phép di chuyển
+                            if (stackPeekValue > dsCotValue)
+                            {
+                                DiChuyen_TraiPhai(index_dia_tren_cung, x);
+                                //di chuyển xong thì cột sẽ push đĩa dc thả xuống vào stack
+                                (hit.collider.name == "Cot 1" ? cot1 : hit.collider.name == "Cot 2" ? cot2 : cot3).Push(ds_dia[index_dia_tren_cung]);
+                                ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = false;
+								xu_li_click = false;
+								StartCoroutine(ClickAfterDelay());
+							}
+                            else // nguoc lai k cho phep di chuyen 
+                            {
+                                ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = false;
+                                //push vao lai vi tri cu
+                                (ds_cot[cot_dang_click].name == "Cot 1" ? cot1 : ds_cot[cot_dang_click].name == "Cot 2" ? cot2 : cot3).Push(ds_dia[index_dia_tren_cung]);
+
+                            }
+                        }
+                    }
+                    else // nguoc lai cot rong stack empty thi k can so sanh dia
+                    {
+                        DiChuyen_TraiPhai(index_dia_tren_cung, x);
+                        (hit.collider.name == "Cot 1" ? cot1 : hit.collider.name == "Cot 2" ? cot2 : cot3).Push(ds_dia[index_dia_tren_cung]);
+                        ds_dia[index_dia_tren_cung].GetComponent<Rigidbody2D>().isKinematic = false;
+						xu_li_click = false;
+						StartCoroutine(ClickAfterDelay());
+					}
+                    da_chon = false;
+                    index_dia_tren_cung = -1;
                 }
-                da_chon = false;
-                index_dia_tren_cung = -1;
             }
-        }
-        if (cot3.Count == so_dia)
-        {
-            //load screen Player_Won sau 0,75s
-            StartCoroutine(LoadSceneAfterDelay(3, 0.75f));
+            if (cot3.Count == so_dia)
+            {
+                //load screen Player_Won sau 0,75s
+                StartCoroutine(LoadSceneAfterDelay(3,1.0f));
+            }
         }
     }
-    //
-    IEnumerator LoadSceneAfterDelay(int sceneIndex, float delayTime)
+	//
+	IEnumerator ClickAfterDelay()
+	{
+		yield return new WaitForSeconds(thoigian_tha_dia);
+
+		xu_li_click = true;
+	}
+
+
+	//
+	IEnumerator LoadSceneAfterDelay(int sceneIndex, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
 
