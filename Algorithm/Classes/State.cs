@@ -17,7 +17,7 @@ namespace tower_of_hanoi.Classes
     {
         // Các giá trị số lượng đĩa và cột để thử nghiệm
         public const int NUM_OF_TOWER = 3;
-        public const int DISC_COUNT = 6;
+        public const int DISC_COUNT = 8;
         public static int goal_tower { get; set; }
 
 

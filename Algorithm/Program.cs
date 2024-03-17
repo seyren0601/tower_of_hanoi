@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 using System.Timers;
 
 long total_time = 0;
+int total_nodes = 0;
 int instances = 0;
-Parallel.For(0, 1000, number =>
+const int RUN_COUNT = 1000;
+long max_time = long.MinValue;
+long max_nodes = long.MinValue;
+State worst_case = null;
+Parallel.For(0, RUN_COUNT, number =>
 {
     // Solution with A*
     // Define start state
@@ -23,7 +28,7 @@ Parallel.For(0, 1000, number =>
     State init = new State(tower_init, 0); // Create start state
 
     //Define goal state
-    /*for (int i = 0; i < State.NUM_OF_TOWER; i++)
+    for (int i = 0; i < State.NUM_OF_TOWER; i++)
     {
         int[] tower = init.towers[i].ToArray();
         if (tower.Length > 0 && tower[tower.Length - 1] == State.DISC_COUNT)
@@ -31,8 +36,8 @@ Parallel.For(0, 1000, number =>
             State.goal_tower = i;
             break;
         }
-    }*/
-    State.goal_tower = 2;
+    }
+    //State.goal_tower = 2;
 
     // all discs in goal column
     Stack<int>[] tower_goal = { new Stack<int>(), new Stack<int>(), new Stack<int>() };
@@ -50,11 +55,22 @@ Parallel.For(0, 1000, number =>
     watch.Stop();
     total_time += watch.ElapsedMilliseconds;
     instances += 1;
+    total_nodes += Close.Count;
+    if (watch.ElapsedMilliseconds > max_time) max_time = watch.ElapsedMilliseconds;
+    if (Close.Count > max_nodes)
+    {
+        worst_case = init;
+        max_nodes = Close.Count;
+    }
     Console.Clear();
-    Console.WriteLine($"Done {instances}/1000 instances");
+    Console.WriteLine($"Done {instances}/{RUN_COUNT} instances");
 });
 
-Console.WriteLine($"Average A* runtime: {(float)total_time / 1000}");
+Console.WriteLine($"Average A* runtime: {(float)total_time / RUN_COUNT}");
+Console.WriteLine($"Average nodes checked: {(float)total_nodes / RUN_COUNT}");
+Console.WriteLine($"Max time: {max_time}");
+Console.WriteLine($"Max nodes: {max_nodes}");
+Console.Write($"Worst case: "); worst_case.PrintTowers();
 
 
 /*
@@ -76,7 +92,7 @@ if (intermediate.towers[0].Count > 0)
 }
 else if (intermediate.towers[1].Count > 0)
 {
-    start = 1; aux = 0; goal = 3;
+    start = 1; aux = 0; goal = 2;
     Console.WriteLine("Start state after A*: ");
     intermediate.PrintTowers();
     RecursionPrintPath(start, aux, goal);

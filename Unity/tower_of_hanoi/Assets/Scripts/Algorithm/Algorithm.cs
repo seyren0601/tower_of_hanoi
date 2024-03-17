@@ -15,11 +15,12 @@ namespace tower_of_hanoi.Classes
         public static List<(int, int)> Moves;
         public static async Task<List<State>>? Solve_AStar(State start, State goal)
         {
+            if(start == goal) return null;
             bool path_found = false;
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
             Dictionary<State, int> Open_Check = new Dictionary<State, int>();
             List<State> Close = new List<State>();
-
+            
 
             Open.Enqueue(start, start);
             Open_Check[start] = start.g;
@@ -76,14 +77,16 @@ namespace tower_of_hanoi.Classes
 
         public static async Task<List<(int, int)>> GetMoveList(List<State> Close){
             List<(int, int)> Moves = new List<(int, int)>();
-            State goal = Close.Last();
-            do{
-                int from = goal.pre.Value.Item1.Item1;
-                int to = goal.pre.Value.Item1.Item2;
-                Moves.Add((from, to));
-                goal = goal.pre.Value.Item2;
-            }while(goal.pre != null);
-            Moves.Reverse();
+            if(Close != null){
+                State goal = Close.Last();
+                do{
+                    int from = goal.pre.Value.Item1.Item1;
+                    int to = goal.pre.Value.Item1.Item2;
+                    Moves.Add((from, to));
+                    goal = goal.pre.Value.Item2;
+                }while(goal.pre != null);
+                Moves.Reverse();
+            }
             return Moves;
         }
 
