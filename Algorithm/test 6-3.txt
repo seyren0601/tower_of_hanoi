@@ -1,17 +1,33 @@
-disc_count = 6
-f = 0 (dijkstra, compare by g) (659ms) total nodes = 721
-f = disc_count - goal count (311ms) total nodes = 480
-f = heuristic (number of wrong ordered discs in goal) (187ms) total nodes = 353
+disc_count = 5
+f = 0 (dijkstra, compare by g) (36,772 ms) average nodes = 162.757
+f = disc_count - goal count (2,586 ms) average nodes = 106.319
+f = heuristic (number of wrong ordered discs in goal) (345 ms) average nodes = 70.426
+f = heuristic (find path to optimal state for recursion algorithm) (57 ms) average nodes = 32.408
 
 recursion: instantaneous(<1ms)
-
 total moves = 63 (2^n - 1)
 
+
+disc_count = 6
+f = 0 (dijkstra, compare by g) (5,040,337 ms) average nodes = 503.329
+f = disc_count - goal count (1,277,488 ms) average nodes = 330.576
+f = heuristic (number of wrong ordered discs in goal) (247,867 ms) average nodes = 220.373
+f = heuristic (find path to optimal state for recursion algorithm) (58,058 ms) average nodes = 159.768
+	+ Max time: 476,526 ms
+	+ Max nodes: 677
+	+ Worst case: { 2 4 } { 3 5 } { 1 6 }
+
 disc_count = 7
-f = 0 (dijkstra, compare by g) (5557ms) total nodes = 2132
-f = disc_count - goal count (2573 ms) total nodes = 1450
-f = heuristic (number of wrong ordered discs in goal) (1435ms) total nodes = 1022
+f = heuristic (find path to optimal state for recursion algorithm) (3,616,192 ms) average nodes = 562.859
+	+ Max time: 10,256,081 ms
+	+ Max nodes: 2186
+	+ Worst case: { 4 } { 2 5 7 } { 1 3 6 }
+
+disc_count = 8
+f = heuristic (find path to optimal state for recursion algorithm) (46,705,124 ms) average nodes = 1558.852
+	+ Max time: 96,140,142 ms
+	+ Max nodes: 6561
+	+ Worst case: { 1 2 4 5 6 8 } { 7 } { 3 }
 
 recursion: instantaneous(<1ms)
-
-total moves = 127 (2^n - 1)
+total moves = 63 (2^n - 1)

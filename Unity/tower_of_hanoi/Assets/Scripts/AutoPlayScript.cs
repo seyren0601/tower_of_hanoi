@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using tower_of_hanoi.Classes;
 using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -40,6 +39,7 @@ public class AutoPlayScript:MonoBehaviour
         {
             if (!algorithm_init)
             {
+                State.DISC_COUNT = (int)GameInfo.disc_count;
                 cot1 = GameInfo.toado_cot1;
                 cot2 = GameInfo.toado_cot2;
                 cot3 = GameInfo.toado_cot3;
@@ -53,26 +53,50 @@ public class AutoPlayScript:MonoBehaviour
                 handled = false;
                 solved = false;
                 algorithm_init = false;
-                
-                // Get list bước đi bằng thuật toán đệ quy
-                Algorithm.Moves = new List<(int, int)>();
-                Algorithm.Solve_Recursion((int)disc_count, 0, 2, 1);
-                Moves = Algorithm.Moves;
 
-                // Get list bước đi bằng thuật toán A*
-                /*cot_int_init[0] = GameInfo.cot1_int; // Khởi tạo trạng thái bắt đầu
+                //Define goal state
+                int[] tower1 = GameInfo.cot1_int.ToArray();
+                int[] tower2 = GameInfo.cot2_int.ToArray();
+                int[] tower3 = GameInfo.cot3_int.ToArray();
+                if (tower1.Length > 0 && tower1[tower1.Length - 1] == State.DISC_COUNT)
+                {
+                    State.goal_tower = 0;
+                }
+                else if (tower2.Length > 0 && tower2[tower2.Length - 1] == State.DISC_COUNT)
+                {
+                    State.goal_tower = 1;
+                }
+                else if (tower3.Length > 0 && tower3[tower3.Length - 1] == State.DISC_COUNT)
+                {
+                    State.goal_tower = 2;
+                }
+                
+                // Get list bước đi bằng thuật toán A* đến trạng thái lý tưởng cho thuật toán đệ quy
+                cot_int_init[0] = GameInfo.cot1_int; // Khởi tạo trạng thái bắt đầu
                 cot_int_init[1] = GameInfo.cot2_int;
                 cot_int_init[2] = GameInfo.cot3_int;
                 State start = new State(cot_int_init, 0);
 
-                for(int i=(int)GameInfo.disc_count;i>0;i--){ // Khởi tạo trạng thái kết thúc
-                    cot_int_goal[2].Push(i);
+                for(int i=State.DISC_COUNT;i>0;i--){ // Khởi tạo trạng thái kết thúc
+                    cot_int_goal[State.goal_tower].Push(i);
                 }
                 State goal = new State(cot_int_goal, 0);
-                Moves = await Algorithm.GetMoveList(await Algorithm.Solve_AStar(start, goal));*/
+                Moves = await Algorithm.GetMoveList(await Algorithm.Solve_AStar(start, goal));
+                Debug.Log(Moves.Count);
+
+                // Get list bước đi bằng thuật toán đệ quy nếu quy được về trạng thái lý tưởng
+                if(State.goal_tower != 2){
+                    int rec_start, rec_aux, rec_goal;
+                    if (State.goal_tower == 1) {rec_start = 1; rec_aux = 0; rec_goal = 2;}
+                    else { rec_start = 0; rec_aux = 1; rec_goal = 2; }
+                    
+                    Algorithm.Moves = new List<(int, int)>();
+                    Algorithm.Solve_Recursion((int)disc_count, rec_start, rec_goal, rec_aux);
+                    Moves.AddRange(Algorithm.Moves);
+                }
+                
 
                 //Kết thúc khởi tạo và chạy thuật toán
-                Debug.Log(Moves.Count);
                 algorithm_init=true;
             }
             // 

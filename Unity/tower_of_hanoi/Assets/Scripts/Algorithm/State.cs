@@ -17,14 +17,15 @@ namespace tower_of_hanoi.Classes
     public class State
     {
         public const int NUM_OF_TOWER = 3;
-        public int DISC_COUNT = (int)GameInfo.disc_count;
+        public static int DISC_COUNT = (int)GameInfo.disc_count;
+        public static int goal_tower { get; set; }
         public Stack<int>[] towers { get; set; } = new Stack<int>[3];
         public int g { get; set; }
         public int f 
         { 
             get 
             { 
-                return GetHeuristicValue();
+                return  GetHeuristicValue();
             } 
         } 
         // Recommend: f = (check order of goal column)
@@ -105,23 +106,43 @@ namespace tower_of_hanoi.Classes
             return null;
         }
 
-        int GetHeuristicValue()
+        int GetHeuristicValue() // Count the number of wrong ordered discs in goal
         {
+            // Heuristic bằng tổng số đĩa nằm sai vị trí ở mỗi cột
+            return CountWrongDiscs(towers[goal_tower]);
+        }
+
+        // Hàm tính số đĩa nằm sai vị trí trong 1 cột
+        int CountWrongDiscs(Stack<int> tower)
+        {
+            // Tạo array tượng trưng cho trường hợp chuẩn của cột (số phần tử = tổng số đĩa)
             int[] array = new int[DISC_COUNT];
-            towers[2].ToArray().CopyTo(array, 0);
+            // Copy số đĩa có trong cột vào array
+            // => đĩa nhỏ nhất nằm ở vị trí đầu của mảng
+            // => mảng được sắp xếp tăng dần
+            // => nếu không đủ số lượng đĩa, các phần tử sau đó sẽ có giá trị default = 0
+            tower.ToArray().CopyTo(array, 0);
+            // Giá trị đĩa lớn nhất
             int max_disc = DISC_COUNT;
             int count = 0;
-            for(int i = DISC_COUNT - 1; i >= 0 ; i--)
+            // Lặp qua mảng từ chỉ số lớn nhất
+            for (int i = DISC_COUNT - 1; i >= 0; i--)
             {
+                // Nếu giá trị tại chỉ số bằng với giá trị lớn nhất hiện tại
+                // => đĩa nằm đúng vị trí
+                // => cộng biến count lên 1
                 if (array[i] == max_disc)
                 {
                     count += 1;
                 }
+                // Nếu phần tử hiện tại != 0 (phần tử đang xét không phải đĩa) => trừ giá trị lớn nhất đi 1
+                // để tiếp tục kiểm tra
                 if (array[i] != 0)
                 {
                     max_disc -= 1;
                 }
             }
+            // Trả về số đĩa nằm sai vị trí = tổng số đĩa - số đĩa đúng vị trí
             return DISC_COUNT - count;
         }
         #endregion

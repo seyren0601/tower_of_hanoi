@@ -18,7 +18,7 @@ namespace tower_of_hanoi.Classes
         // Hàm giải bài toán Tháp Hà Nội bằng thuật giải A*
         public static List<State>? Solve_AStar(State start, State goal)
         {
-            // Open là một PriorityQueue, với độ ưu tiên là f, sau đó tới g
+            // Open là một PriorityQueue, với độ ưu tiên là f
             PriorityQueue<State, State> Open = new PriorityQueue<State, State>(new StateComparer());
 
             // Dictionary/Map để giảm độ phức tạp thao tác tìm kiếm trạng thái trong Open còn O(1)
